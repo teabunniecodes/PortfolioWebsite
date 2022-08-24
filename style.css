@@ -1,0 +1,28 @@
+h1, h2, h3, ol {
+    font-family: Arial, Helvetica, sans-serif;
+    color: hotpink;
+    background-color: lavenderblush;
+}
+
+h1 {
+    text-align: center;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    /* justify-content: space-evenly; */
+    width: auto;
+}
+
+.menu {
+    font-family: Arial, Helvetica, sans-serif;
+    color: plum;
+    flex-grow: 1;
+}
+
+.about-me {
+    color: pink;
+    text-align: center;
+    flex-grow: 2;
+}
