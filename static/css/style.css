@@ -39,3 +39,16 @@ a:visited {
     text-align: center;
     flex-grow: 2;
 }
+
+.full-guess {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.letter-guess {
+    border-color: white;
+    border-style: solid; 
+    padding: 0, 10px, 0, 10px;
+
+}
