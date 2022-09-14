@@ -11,7 +11,7 @@ for (let x = 0; x < btn.length; x++) {
 function buttonValue(x) {
     let compTurn = Math.floor(Math.random() * turns.length)
     if (btn[x].value === turns[compTurn]) {
-        body.innerHTML = (`<p></p>It's a tie!</p><p>Play again?</p><button class="reset" onClick="window.location.reload();">Yes</button>`);
+        body.innerHTML = (`<p>You both played ${btn[x].value}</p><p>It's a tie!</p><p>Play again?</p><button class="reset" onClick="window.location.reload();">Yes</button>`);
     }
     // else if ((btn.value === "rock" && turns[compTurn] === "scissor") || (btn.value === "paper" && turns[compTurn] === "rock") || (btn.value === "scissor" && turns[compTurn] === "paper")) {
     else if ((btn[x].value === "rock" && compTurn === 2) || (btn[x].value === "paper" && compTurn === 0) || (btn[x].value === "scissor" && compTurn === 1)) {
