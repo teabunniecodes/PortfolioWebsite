@@ -6,11 +6,13 @@
         <script src="../static/javascript/rockpaperscissors.js" defer></script>
     </head>
     <body>
-        <section id="text-area">
+        <section id="text-area" style="display: none;""><p>Game Text</p></section>
+        <section id="buttons">
             <button class="player-turn" value="rock">Rock</button>
             <button class="player-turn" value="paper">Paper</button>
             <button class="player-turn" value="scissor">Scissor</button>
         </section>
+        <section id="play-again" style="display: none;"><p>Play again?</p><button class="reset" onClick="window.location.reload();">Yes</button></section>
         <br><a href="/">Back</a>
     </body>
 </html>

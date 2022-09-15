@@ -1,9 +1,13 @@
 const btn = document.getElementsByClassName("player-turn")
-const body = document.getElementById("text-area")
+const buttons = document.getElementById("buttons")
+const results = document.getElementById("text-area")
+const reset = document.getElementById("play-again")
 const turns = ["rock", "paper", "scissor"]
 
 for (let x = 0; x < btn.length; x++) {
     btn[x].addEventListener("click", e=> {
+        buttons.style.display = "none"
+        switchViews();
         buttonValue(x);
     });
 }
@@ -11,19 +15,19 @@ for (let x = 0; x < btn.length; x++) {
 function buttonValue(x) {
     let compTurn = Math.floor(Math.random() * turns.length)
     if (btn[x].value === turns[compTurn]) {
-        body.innerHTML = (`<p>You both played ${btn[x].value}</p><p>It's a tie!</p><p>Play again?</p><button class="reset" onClick="window.location.reload();">Yes</button>`);
+        results.innerHTML = (`<p>You both played ${btn[x].value}</p><p>It's a tie!</p>`);
     }
-    // else if ((btn.value === "rock" && turns[compTurn] === "scissor") || (btn.value === "paper" && turns[compTurn] === "rock") || (btn.value === "scissor" && turns[compTurn] === "paper")) {
     else if ((btn[x].value === "rock" && compTurn === 2) || (btn[x].value === "paper" && compTurn === 0) || (btn[x].value === "scissor" && compTurn === 1)) {
-        body.innerHTML = (`<p>You played ${btn[x].value} and the computer played ${turns[compTurn]}.</p><p>You Won!!!</p><p>Play again?</p><button class="reset" onClick="window.location.reload();">Yes</button>`);
-        // console.log("You played " + btn.value + " and the computer played " + turns[compTurn] + " You Won!!!");
+        results.innerHTML = (`<p>You played ${btn[x].value} and the computer played ${turns[compTurn]}.</p><p>You Won!!!</p>`);
         }
     else {
-        body.innerHTML = (`<p>You played ${btn[x].value} and the computer played ${turns[compTurn]}.</p><p>You Lose!!!</p><p>Play again?</p><button class="reset" onClick="window.location.reload();">Yes</button>`);
-        // console.log("You played " + btn.value + " and the computer played " + turns[compTurn] + " You Lose!!!");
+        results.innerHTML = (`<p>You played ${btn[x].value} and the computer played ${turns[compTurn]}.</p><p>You Lose!!!</p>`);
     }
 }
 
-// function playAgain() {
-//     body.innerHTML = (`<p>Play again?</p><button class="reset" onClick="window.location.reload();">Yes</button>`);
-// }
+function switchViews() {
+    if (buttons.style.display === "none") {
+        results.style.display = "block";
+        reset.style.display = "block";
+    }
+}

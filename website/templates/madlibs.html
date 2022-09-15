@@ -6,7 +6,7 @@
     <link href="../static/css/style.css" type="text/css" rel="stylesheet" />
     <script src="../static/javascript/madlibs.js" defer></script>
     <body>
-        <form id="mad-libs-text">
+        <form id="mad-libs-words">
             <h1>Please fill in the blanks</h1>
             <input type="text" id="adj1" placeholder="adjective"><br>
             <input type="text" id="noun1" placeholder="noun"><br>
@@ -22,6 +22,8 @@
             <input type="text" id="adj4" placeholder="adjective"><br>
             <input id="mad-libs-button" type="button" value="Enter"><br>
         </form>
+        <section id="mad-libs-text" style="display: none;">Text goes here</section>
+        <section id="reset" style="display: none;"><p>Do you want to play again?</p><button onClick="window.location.reload()">Yes</button></section>
         <a href="/">Back</a>
 
     </body>
