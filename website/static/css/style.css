@@ -20,6 +20,23 @@ a:visited {
     color: rgb(229, 138, 229);
 }
 
+a {
+    color: rgb(240, 131, 211);
+}
+
+button {
+    background-color: pink;
+    color: rgb(72, 75, 86);
+    border: solid .3px rgb(240, 131, 211);
+    border-radius: 6px;
+    font-weight: bold;
+    /* border-spacing: 2px; */
+}
+
+button:active {
+    background-color: hotpink;
+}
+
 .row {
     display: flex;
     flex-direction: row;
