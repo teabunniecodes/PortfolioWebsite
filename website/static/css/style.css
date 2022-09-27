@@ -37,6 +37,10 @@ button:active {
     background-color: hotpink;
 }
 
+.colored-button {
+    background-color: blueviolet;
+}
+
 .row {
     display: flex;
     flex-direction: row;
