@@ -4,11 +4,12 @@ const guessLetter = document.getElementById("letter-guess")
 const letterList = document.getElementById("letter-list")
 const turnsLeft = document.getElementById("turns-left")
 const guessList = []
+let turns = 6
 document.onkeyup = checkKey
 // document.onkeyup = submitGuess
-document.onkeydown = checkButton
+document.onkeydown = colorButton
+document.addEventListener = checkButton()
 
-let turns = 7
 
 // What I want to accomplish in hangman GUI
 // buttons to flash if cooresponding key is pressed (can I use key value to = button value?)
@@ -20,33 +21,37 @@ let turns = 7
 // create a way to have the user guess an entire word - have Enter and Backspace active during this time
 // checks guessed word against server side word - if wrong Game over automatically
 
-for (let x=0; x < keyboardButton.length; x++) {
-    keyboardButton[x].addEventListener("click", e => {
-        console.log("Button Pressed");
-    });
+function checkButton() {
+    for (let x=0; x < keyboardButton.length; x++) {
+        keyboardButton[x].addEventListener("click", e => {
+            validGuess(keyboardButton[x].value);
+            addGuess(keyboardButton[x].value);
+            let button = document.getElementById(keyboardButton[x].id)
+            let classes = button.classList
+            if (button.classList != "colored-button") {
+                classes.toggle("colored-button", "keyboard-button")
+            }
+        });
+    }
 }
 
-function checkButton(e) {
+function colorButton(e) {
     let button = document.getElementById(e.key)
-    const classes = button.classList
+    let classes = button.classList
     if ((e.key == button.value) && (button.classList != "colored-button")) {
         classes.toggle("colored-button", "keyboard-button");
     }
 }
 
 function checkKey(e) {
-    if (turns > 0) {
-        if ((e.keyCode >= 65 && e.keyCode <= 90) || (e.keyCode >= 97 && e.keyCode <= 122)) {
-            console.log(e.key + " is a letter");
-            let letter = e.key
-            validGuess(e.key);
-            addGuess(e.key);
-        }
+    if ((e.keyCode >= 65 && e.keyCode <= 90) || (e.keyCode >= 97 && e.keyCode <= 122)) {
+        colorButton(e)
+        console.log(e.key + " is a letter");
+        validGuess(e.key);
+        addGuess(e.key);
     }
-    // if (turns === 0) {
-    //     gameOver(e.key)
-    // }
 }
+
 // function submitGuess(e)
 //     if (e.keyCode == 13) {
 //             console.log(e.key + " is Enter");
@@ -67,15 +72,15 @@ function addGuess(guess) {
         console.log("You already guessed this");
     }
     else {
-        turns -= 1
         turnsLeft.innerHTML = `Turns Left : ${turns}`
         guessList.push(guess.toUpperCase());
         letterList.innerHTML = `${guessList}`;
     }
 }
 
-
-function gameOver(guess) {
-    turnsLeft.innerHTML = `Turns Left : ${turns}`;
-    guessLetter.innerHTML = `GAME OVER D:`;
+function gameOver() {
+    if (turns == 0) {
+        turnsLeft.innerHTML = `Turns Left : ${turns}`;
+        guessLetter.innerHTML = `GAME OVER D:`;
+    }
 }
