@@ -5,9 +5,10 @@ const letterList = document.getElementById("letter-list")
 const turnsLeft = document.getElementById("turns-left")
 const guessList = []
 let turns = 6
+let button = "x"
+let classes = "y"
+let guessWord = false
 document.onkeyup = checkKey
-// document.onkeyup = submitGuess
-document.onkeydown = colorButton
 document.addEventListener = checkButton()
 
 
@@ -25,9 +26,8 @@ function checkButton() {
     for (let x=0; x < keyboardButton.length; x++) {
         keyboardButton[x].addEventListener("click", e => {
             validGuess(keyboardButton[x].value);
-            addGuess(keyboardButton[x].value);
-            let button = document.getElementById(keyboardButton[x].id)
-            let classes = button.classList
+            button = document.getElementById(keyboardButton[x].id)
+            classes = button.classList
             if (button.classList != "colored-button") {
                 classes.toggle("colored-button", "keyboard-button")
             }
@@ -35,46 +35,60 @@ function checkButton() {
     }
 }
 
-function colorButton(e) {
-    let button = document.getElementById(e.key)
-    let classes = button.classList
-    if ((e.key == button.value) && (button.classList != "colored-button")) {
-        classes.toggle("colored-button", "keyboard-button");
-    }
-}
-
 function checkKey(e) {
-    if ((e.keyCode >= 65 && e.keyCode <= 90) || (e.keyCode >= 97 && e.keyCode <= 122)) {
-        colorButton(e)
-        console.log(e.key + " is a letter");
-        validGuess(e.key);
-        addGuess(e.key);
+    if (turns > 0) {
+        if ((e.keyCode >= 65 && e.keyCode <= 90) || (e.keyCode >= 97 && e.keyCode <= 122) && (guessWord == false)) {
+            validGuess(e.key);
+            button = document.getElementById(e.key);
+            classes = button.classList;
+            if ((e.key == button.id) && (button.classList != "colored-button")) {
+                classes.toggle("colored-button", "keyboard-button");
+            }
+        }
+        else if (e.key === "Shift") {
+            console.log("Shift was pressed")
+            if (guessWord == false) {
+                guessWord = true
+            }
+            else {
+                guessWord = false
+            }
+        }
+        if (guessWord == true) {
+            if (e.key === "Enter") {
+                console.log(e.key + " is Enter");
+                console.log("This needs to check for the length of the word in future as well")
+                guessWord = false
+                // return e.keyCode;
+            }
+            else if (e.key === "Backspace") {
+                console.log(e.key + " is Backspace");
+                return e.keyCode;
+            }
+        }
     }
 }
 
-// function submitGuess(e)
-//     if (e.keyCode == 13) {
-//             console.log(e.key + " is Enter");
-//             return e.keyCode;
-//         }
-//     else if (e.keyCode == 8) {
-//             console.log(e.key + " is Backspace");
-//             return e.keyCode;
-//         }
+// function submitGuess(e) {
+    
+// }
 
 function validGuess(guess) {
-    // guessList.push(guess);
-    guessLetter.innerHTML = `you guessed - ${guess.toUpperCase()}`;
-}
-
-function addGuess(guess) {
-    if (guessList.includes(guess)) {
-        console.log("You already guessed this");
-    }
-    else {
-        turnsLeft.innerHTML = `Turns Left : ${turns}`
-        guessList.push(guess.toUpperCase());
-        letterList.innerHTML = `${guessList}`;
+    guess = guess.toUpperCase()
+    if (turns > 0){
+        if (guessList.includes(guess)) {
+            guessLetter.innerHTML = `You already guessed the letter ${guess}.  You want to waste a turn???`;
+        }
+        else {
+            guessList.push(guess);
+            turns -= 1;
+            turnsLeft.innerHTML = `Turns Left : ${turns}`;
+            guessLetter.innerHTML = `you guessed - ${guess}`;
+            letterList.innerHTML = `${guessList}`;
+            if (turns == 0) {
+                gameOver()
+            }
+        }
     }
 }
 
