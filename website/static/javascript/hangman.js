@@ -1,16 +1,17 @@
-// const words = loadStrings(textdocuments/hangman-wordlist.txt)
 const keyboardButton = document.getElementsByClassName("keyboard-button")
 const guessLetter = document.getElementById("letter-guess")
 const letterList = document.getElementById("letter-list")
 const turnsLeft = document.getElementById("turns-left")
+const gameBoard = document.getElementById("game-board")
+const gameStart = document.getElementById("game-start")
+const gamePlay = document.getElementById("game-play")
 const guessList = []
 let turns = 6
 let button = "x"
 let classes = "y"
+let className = "colored-button"
 let guessWord = false
 document.onkeyup = checkKey
-document.addEventListener = checkButton()
-
 
 // What I want to accomplish in hangman GUI
 // buttons to flash if cooresponding key is pressed (can I use key value to = button value?)
@@ -22,29 +23,33 @@ document.addEventListener = checkButton()
 // create a way to have the user guess an entire word - have Enter and Backspace active during this time
 // checks guessed word against server side word - if wrong Game over automatically
 
+function startGame() {
+    gamePlay.addEventListener ("click", e=> {
+        gameStart.style.display = "none";
+        switchViews();
+    });
+}
+
 function checkButton() {
     for (let x=0; x < keyboardButton.length; x++) {
         keyboardButton[x].addEventListener("click", e => {
             validGuess(keyboardButton[x].value);
             button = document.getElementById(keyboardButton[x].id)
             classes = button.classList
-            if (button.classList != "colored-button") {
-                classes.toggle("colored-button", "keyboard-button")
-            }
+            classes.toggle(className, true)
         });
     }
 }
 
 function checkKey(e) {
-    if (turns > 0) {
+    if ((turns > 0) && (gameBoard.style.display === "block")) {
         if ((e.keyCode >= 65 && e.keyCode <= 90) || (e.keyCode >= 97 && e.keyCode <= 122) && (guessWord == false)) {
             validGuess(e.key);
             button = document.getElementById(e.key);
             classes = button.classList;
-            if ((e.key == button.id) && (button.classList != "colored-button")) {
-                classes.toggle("colored-button", "keyboard-button");
-            }
+            classes.toggle(className, true);
         }
+        // Look up enum for JS and refactor this code so it utilizes it
         else if (e.key === "Shift") {
             console.log("Shift was pressed")
             if (guessWord == false) {
@@ -77,14 +82,14 @@ function validGuess(guess) {
     guess = guess.toUpperCase()
     if (turns > 0){
         if (guessList.includes(guess)) {
-            guessLetter.innerHTML = `You already guessed the letter ${guess}.  You want to waste a turn???`;
+            guessLetter.textContent = `You already guessed the letter ${guess}.  You want to waste a turn???`;
         }
         else {
             guessList.push(guess);
             turns -= 1;
-            turnsLeft.innerHTML = `Turns Left : ${turns}`;
-            guessLetter.innerHTML = `you guessed - ${guess}`;
-            letterList.innerHTML = `${guessList}`;
+            turnsLeft.textContent = `Turns Left : ${turns}`;
+            guessLetter.textContent = `you guessed - ${guess}`;
+            letterList.textContent = `${guessList}`;
             if (turns == 0) {
                 gameOver()
             }
@@ -94,7 +99,23 @@ function validGuess(guess) {
 
 function gameOver() {
     if (turns == 0) {
-        turnsLeft.innerHTML = `Turns Left : ${turns}`;
-        guessLetter.innerHTML = `GAME OVER D:`;
+        turnsLeft.textContent = `Turns Left : ${turns}`;
+        guessLetter.textContent = `GAME OVER D:`;
     }
 }
+
+function switchViews() {
+    if (gameStart.style.display === "none") {
+        gameBoard.style.display = "block"
+    }
+}
+
+// function getGuess() {
+//     fetch("/hangman", {
+//         method: "POST",
+
+//     })
+// }
+
+checkButton()
+startGame()

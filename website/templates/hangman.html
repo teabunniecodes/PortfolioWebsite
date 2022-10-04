@@ -6,49 +6,53 @@
         <script src=".\static\javascript\hangman.js" defer></script>
     </head>
     <body>
-        <h3>Hangman :D</h3>
-        <!-- <section class="full-guess"> -->
-            <section id="hidden-word">_ _ _ _ _ _</section><br>
-            <section id="turns-left">Turns Left - 6</section><section id="letter-guess">?</section><br>
-            <section id="letter-list">guesses</section><br> 
-        <!-- </section> -->
+        <section id="game-start">Do you want to play?<br>
+            <button id = game-play>Play</button></section>
+        <section id="game-board" style="display: none;">
+            <h3>Hangman :D</h3>
+            <!-- <section class="full-guess"> -->
+                <section id="hidden-word">{{word}}</section><br>
+                <section id="turns-left">Turns Left - 6</section><section id="letter-guess">?</section><br>
+                <section id="letter-list">guesses</section><br> 
+            <!-- </section> -->
 
-        <div class="keyboard">
-            <section id="first-row">
-                <button class="keyboard-button" id="q" value="q">q</button>
-                <button class="keyboard-button" id="w" value="w">w</button>
-                <button class="keyboard-button" id="e" value="e">e</button>
-                <button class="keyboard-button" id="r" value="r">r</button>
-                <button class="keyboard-button" id="t" value="t">t</button>
-                <button class="keyboard-button" id="y" value="y">y</button>
-                <button class="keyboard-button" id="u" value="u">u</button>
-                <button class="keyboard-button" id="i" value="i">i</button>
-                <button class="keyboard-button" id="o" value="o">o</button>
-                <button class="keyboard-button" id="p" value="p">p</button>
-            </section>
-            <section id="second-row">
-                <button class="keyboard-button" id="a" value="a">a</button>
-                <button class="keyboard-button" id="s" value="s">s</button>
-                <button class="keyboard-button" id="d" value="d">d</button>
-                <button class="keyboard-button" id="f" value="f">f</button>
-                <button class="keyboard-button" id="g" value="g">g</button>
-                <button class="keyboard-button" id="h" value="h">h</button>
-                <button class="keyboard-button" id="j" value="j">j</button>
-                <button class="keyboard-button" id="k" value="k">k</button>
-                <button class="keyboard-button" id="l" value="l">l</button>
-            </section>
-            <section id="third-row">
-                <button class="keyboard-action" id="delete" value="delete">delete</button>
-                <button class="keyboard-button" id="z" value="z">z</button>
-                <button class="keyboard-button" id="x" value="x">x</button>
-                <button class="keyboard-button" id="c" value="c">c</button>
-                <button class="keyboard-button" id="v" value="v">v</button>
-                <button class="keyboard-button" id="b" value="b">b</button>
-                <button class="keyboard-button" id="n" value="n">n</button>
-                <button class="keyboard-button" id="m" value="m">m</button>
-                <button class="keyboard-action" id="enter" value="enter">enter</button>
-            </section>
-        </div>
+            <div class="keyboard">
+                <section id="first-row">
+                    <button class="keyboard-button" id="q" value="q">q</button>
+                    <button class="keyboard-button" id="w" value="w">w</button>
+                    <button class="keyboard-button" id="e" value="e">e</button>
+                    <button class="keyboard-button" id="r" value="r">r</button>
+                    <button class="keyboard-button" id="t" value="t">t</button>
+                    <button class="keyboard-button" id="y" value="y">y</button>
+                    <button class="keyboard-button" id="u" value="u">u</button>
+                    <button class="keyboard-button" id="i" value="i">i</button>
+                    <button class="keyboard-button" id="o" value="o">o</button>
+                    <button class="keyboard-button" id="p" value="p">p</button>
+                </section>
+                <section id="second-row">
+                    <button class="keyboard-button" id="a" value="a">a</button>
+                    <button class="keyboard-button" id="s" value="s">s</button>
+                    <button class="keyboard-button" id="d" value="d">d</button>
+                    <button class="keyboard-button" id="f" value="f">f</button>
+                    <button class="keyboard-button" id="g" value="g">g</button>
+                    <button class="keyboard-button" id="h" value="h">h</button>
+                    <button class="keyboard-button" id="j" value="j">j</button>
+                    <button class="keyboard-button" id="k" value="k">k</button>
+                    <button class="keyboard-button" id="l" value="l">l</button>
+                </section>
+                <section id="third-row">
+                    <button class="keyboard-action" id="delete" value="delete">delete</button>
+                    <button class="keyboard-button" id="z" value="z">z</button>
+                    <button class="keyboard-button" id="x" value="x">x</button>
+                    <button class="keyboard-button" id="c" value="c">c</button>
+                    <button class="keyboard-button" id="v" value="v">v</button>
+                    <button class="keyboard-button" id="b" value="b">b</button>
+                    <button class="keyboard-button" id="n" value="n">n</button>
+                    <button class="keyboard-button" id="m" value="m">m</button>
+                    <button class="keyboard-action" id="enter" value="enter">enter</button>
+                </section>
+            </div>
+        </section>
         <p><a href="/">Back</a></p>
     </body>
 </html>
