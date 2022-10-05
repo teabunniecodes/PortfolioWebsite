@@ -1,4 +1,5 @@
 const keyboardButton = document.getElementsByClassName("keyboard-button")
+const keyboardAction = document.getElementsByClassName("keyboard-action")
 const guessLetter = document.getElementById("letter-guess")
 const letterList = document.getElementById("letter-list")
 const turnsLeft = document.getElementById("turns-left")
@@ -31,15 +32,32 @@ function startGame() {
 }
 
 function checkButton() {
+    // Need to fix so the buttons no longer change colors if turns are 0 - also need to make sure to activate the shift button when pressed
     for (let x=0; x < keyboardButton.length; x++) {
         keyboardButton[x].addEventListener("click", e => {
             validGuess(keyboardButton[x].value);
             button = document.getElementById(keyboardButton[x].id)
             classes = button.classList
             classes.toggle(className, true)
-        });
+            });
+        }
+    for (let x=0; x < keyboardAction.length; x++) {
+        keyboardAction[x].addEventListener("click", e => {
+            button = document.getElementById(keyboardAction[x].id)
+            classes = button.classList
+            if (button.id === "shift") {
+                classes.toggle(className)
+            }
+                //need to only work while shift button is highlighted.  If statement :D
+                if (button.id === "enter") {
+                    console.log("Needs to remove the highlight on the shift key")
+                }
+                else {
+                    console.log("TO DO")
+                }
+        })
     }
-}
+    }
 
 function checkKey(e) {
     if ((turns > 0) && (gameBoard.style.display === "block")) {
@@ -51,6 +69,9 @@ function checkKey(e) {
         }
         // Look up enum for JS and refactor this code so it utilizes it
         else if (e.key === "Shift") {
+            button = document.getElementById("shift")
+            classes = button.classList;
+            classes.toggle(className);
             console.log("Shift was pressed")
             if (guessWord == false) {
                 guessWord = true
@@ -68,7 +89,7 @@ function checkKey(e) {
             }
             else if (e.key === "Backspace") {
                 console.log(e.key + " is Backspace");
-                return e.keyCode;
+                // return e.keyCode;
             }
         }
     }
@@ -80,6 +101,7 @@ function checkKey(e) {
 
 function validGuess(guess) {
     guess = guess.toUpperCase()
+    userGuess = guess
     if (turns > 0){
         if (guessList.includes(guess)) {
             guessLetter.textContent = `You already guessed the letter ${guess}.  You want to waste a turn???`;
@@ -90,6 +112,16 @@ function validGuess(guess) {
             turnsLeft.textContent = `Turns Left : ${turns}`;
             guessLetter.textContent = `you guessed - ${guess}`;
             letterList.textContent = `${guessList}`;
+            
+            fetch("/hangman", {
+                headers: {
+                    "Content-type": "application/json"
+                },
+                method: "POST",
+                body: JSON.stringify(guess)
+            })
+
+
             if (turns == 0) {
                 gameOver()
             }
@@ -109,13 +141,6 @@ function switchViews() {
         gameBoard.style.display = "block"
     }
 }
-
-// function getGuess() {
-//     fetch("/hangman", {
-//         method: "POST",
-
-//     })
-// }
 
 checkButton()
 startGame()
