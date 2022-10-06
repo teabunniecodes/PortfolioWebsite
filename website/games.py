@@ -40,6 +40,3 @@ def madlibs():
 @games.route('/rps')
 def rps():
     return render_template("rockpaperscissors.html")
-
-
-# figure out how to send guess from client side back to server to check
