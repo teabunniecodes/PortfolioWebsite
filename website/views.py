@@ -8,7 +8,7 @@ views = Blueprint('views', __name__)
 def home():
     return render_template("home.html")
 
-@views.route('/user', methods=['GET', 'POST'])
+@views.get('/user')
 def user():
     username = request.form.get("username")
     password = request.form.get("password")
@@ -24,8 +24,12 @@ def signup():
         created = date.today()
         username = request.form.get("username")
         email = request.form.get("email")
-        password1 = sha256((request.form.get("password1")).encode()).hexdigest()
-        password2 = sha256((request.form.get("password2")).encode()).hexdigest()
+        password1 = request.form.get("password1")
+        password2 = request.form.get("password2")
+        if password1 == password2:
+            password1 = sha256((password1).encode()).hexdigest()
+        else:
+            print("Passwords don't match")
 
         # username_exists = ???.filter_by(username = username).first()
         # email_exists = ???.filter_by(email = email).first()
@@ -36,9 +40,6 @@ def signup():
         if len(password1) < 6:
             flash('Password is too short!', category = 'error')
             print('Password is too short!')
-        elif password1 != password2:
-            flash('Password doesn\'t match!', category = 'error')
-            print('Password doesn\'t match!')
         else:
             database = SQL_db.User_Info()
             database.connect_db()

@@ -20,8 +20,8 @@ def hangman():
     if request.method == "POST":
         guess_letter = request.get_data(as_text=Literal[True])
         print(guess_letter)
-        for x in range(8):
-            print(guess_letter + str(x))
+        # for x in range(8):
+        #     print(guess_letter + str(x))
             # if guess_letter == chosen_word[index] and 
             # if guess_letter == letter:
             #     print("Horray!")
