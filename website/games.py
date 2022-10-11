@@ -1,5 +1,4 @@
 from typing import Literal
-from unicodedata import category
 from flask import Blueprint, render_template, request, jsonify, flash
 import random
 

@@ -12,9 +12,19 @@ class User_Info:
                         Created DATETIME, Username TEXT, Email TEXT, Password TEXT)""")
 
     def insert_data(self, date, username, email, password):
-        sql = f"""INSERT INTO user_info(Created, Username, Email, Password)
+        sql = """INSERT INTO user_info(Created, Username, Email, Password)
                     VALUES (?, ?, ?, ?)"""
         self.db.execute(sql, [date, username, email, password])
+
+    def access_email(self, inquiry):
+        self.db.execute("SELECT email FROM user_info WHERE email = ?", [inquiry])
+        if self.db.fetchone() != None:
+            return True
+
+    def access_username(self, inquiry):
+        self.db.execute("SELECT username FROM user_info WHERE username = ?", [inquiry])
+        if self.db.fetchone() != None:
+            return True
     
     def close_db(self):
         self.conn_db.commit()

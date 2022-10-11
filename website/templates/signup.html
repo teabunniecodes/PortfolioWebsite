@@ -6,9 +6,12 @@
     </head>
     <body>
         <h3>Please fill out the information to create an account</h3>
+        {% with messages = get_flashed_messages() %} {% if messages %} {% for message in messages %}
+        <p>{{ message }}</p>
+        {% endfor %} {% endif %} {% endwith %}
         <form method="POST">
-            <label for="username">Username: </label><input type="text" name="username" placeholder="username"><br>
-            <label for="email">Email: </label><input type="text" name="email" placeholder="email"><br>
+            <label for="username">Username: </label><input type="text" autocomplete="off" name="username" placeholder="username"><br>
+            <label for="email">Email: </label><input type="text" autocomplete="off" name="email" placeholder="email"><br>
             <label for="password1">Pseudo password: </label><input type="password" name="password1" placeholder="password1"><br>
             <label for="password2">Confirm password: </label><input type="password" name="password2" placeholder="password2"><br>
             <input type="submit"><br>
