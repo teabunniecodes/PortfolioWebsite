@@ -66,7 +66,7 @@ function checkKey(e) {
     classes = button.classList;
     if (e.key === "Shift") {
         guessWord = !guessWord;
-        console.log(guessWord)
+        console.log(guessWord);
         if (guessWord == true) {
             classes.toggle(className, true);
         }
@@ -77,9 +77,9 @@ function checkKey(e) {
         if (guessWord == true) {
             if (e.key === "Enter") {
                 console.log(e.key + " is Enter");
-                console.log("This needs to check for the length of the word in future as well")
-                guessWord = false
-                turns = 0
+                console.log("This needs to check for the length of the word in future as well");
+                guessWord = false;
+                turns = 0;
                 gameOver()
                 // return e.keyCode;
             }

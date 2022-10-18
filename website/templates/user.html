@@ -4,15 +4,20 @@
         <title>User Name</title>
         <link href="../static/css/style.css" type="text/css" rel="stylesheet">
     </head>
-    <a>
+    <body>
         <h3>Please input your username for the leaderboards.</h3>
         <a href="/signup"><button value="create">New User</button></a>
+        {% with messages = get_flashed_messages() %} {% if messages %} {% for message in messages %} {% if current_user.is_authenticated %}
+        <p>{{ message }} {{ current_user.id }}</p>
+        {% endif %} {% endfor %} {% endif %} {% endwith %}
+        </a>
+
         <form method="POST">
             <label for="guest">Sign in as guest instead? </label><input type="submit" value="Guest"><br>
-            <label for="username">Twitch Username: </label><input type="text" name="username" placeholder="username"><br>
-            <label for="password">Pseudo password: </label><input type="password" name="password" placeholder="password"><br>
+            <label for="username">Username: </label><input type="text" name="username" autocomplete="off" placeholder="username"><br>
+            <label for="password">Password: </label><input type="password" name="password" placeholder="password"><br>
             <input type="submit"><br>
         </form>
-        <a href="/">Back</a>
+        <a href="/">Back</a> <a href="/logout">Logout</a>
     </body>
 </html>

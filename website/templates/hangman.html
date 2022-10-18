@@ -6,7 +6,7 @@
         <script src=".\static\javascript\hangman.js" defer></script>
     </head>
     <body>
-        <section id="game-start">Do you want to play?<br>
+        <section id="game-start">Do you want to play {% if current_user.is_authenticated %}{{ current_user.id }}{% endif %}?<br>
             <button id = game-play>Play</button></section>
         <section id="game-board" style="display: none;">
             <h3>Hangman :D</h3>
