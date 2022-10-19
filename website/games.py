@@ -14,15 +14,20 @@ def hangman():
         db = SQL_db.Hangman()
         db.connect_db()
         db.create_table()
-        with open("./text documents/hangman-wordlist.txt") as read:
-            words = list(map(str, read))
-            chosen_word = random.choice(words)
-            chosen_word = chosen_word.upper()
-            guess_word = len(chosen_word) * "_ "
-            print(chosen_word)
+        if db.check_id(current_user.get_id()):
+            with open("./text documents/hangman-wordlist.txt") as read:
+                words = list(map(str, read))
+                chosen_word = random.choice(words)
+                chosen_word = chosen_word.upper()
+                guess_word = len(chosen_word) * "_ "
             db.insert_data(current_user.get_id(), chosen_word)
-            db.close_db()
-        return render_template("hangman.html", word = guess_word)
+            return render_template("hangman.html", word = guess_word)
+        else:
+            chosen_word = db.get_word(current_user.get_id())
+            guess_word = len(chosen_word) * "_ "
+            return render_template("hangman.html", word = guess_word)
+    db.close_db()
+        # return render_template("hangman.html")
     # POST method
     if request.method == "POST":
         guess_letter = request.get_data(as_text=Literal[True])

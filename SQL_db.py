@@ -1,3 +1,4 @@
+from select import select
 import sqlite3
 
 class User_Info():
@@ -55,19 +56,29 @@ class Hangman():
         self.db.execute("""CREATE TABLE IF NOT EXISTS hangman
                         (id TEXT, Word TEXT, Guessed_Letters TEXT, Guesses_Left INT)""")
 
-    def insert_data(self, username, word):
+    def insert_data(self, inquiry, inquiry2):
         sql = """INSERT INTO hangman(id, Word)
                 VALUES (?, ?)"""
-        self.db.execute(sql, [username, word])
+        self.db.execute(sql, [inquiry, inquiry2])
 
     # def update_guesses(self):
 
-    # def check_id(self, username):
+    def get_word(self, inquiry):
+        word = self.db.execute("SELECT Word FROM hangman WHERE id = ?", [inquiry])
+        word = word.fetchone()
+        return word[0]
 
+    def check_id(self, inquiry):
+        self.db.execute("SELECT id FROM hangman WHERE id = ?", [inquiry])
+        if self.db.fetchone() == None:
+            return True
 
     def close_db(self):
         self.conn_db.commit()
         self.conn_db.close()
+
+    def clearTable(self):
+        self.db.execute("DROP TABLE hangman")
 
 # class Wordle():
 
