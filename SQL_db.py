@@ -16,23 +16,23 @@ class User_Info():
                     VALUES (?, ?, ?, ?)"""
         self.db.execute(sql, [date, username, email, password])
 
-    def access_email(self, inquiry):
-        self.db.execute("SELECT email FROM user_info WHERE email = ?", [inquiry])
+    def access_email(self, email):
+        self.db.execute("SELECT email FROM user_info WHERE email = ?", [email])
         if self.db.fetchone() != None:
             return True
 
-    def access_username(self, inquiry):
-        self.db.execute("SELECT username FROM user_info WHERE username = ?", [inquiry])
+    def access_username(self, username):
+        self.db.execute("SELECT username FROM user_info WHERE username = ?", [username])
         if self.db.fetchone() != None:
             return True
 
-    def access_password(self, inquiry):
-        self.db.execute("SELECT password FROM user_info WHERE password = ?", [inquiry])
+    def access_password(self, password):
+        self.db.execute("SELECT password FROM user_info WHERE password = ?", [password])
         if self.db.fetchone() != None:
             return True
 
-    def access_user(self, inquiry1, inquiry2):
-        self.db.execute("SELECT * FROM user_info WHERE username = ? and password = ?", [inquiry1, inquiry2])
+    def access_user(self, username, password):
+        self.db.execute("SELECT * FROM user_info WHERE username = ? and password = ?", [username, password])
         user = self.db.fetchone()
         if user is None:
             print("Boo!")
@@ -56,28 +56,46 @@ class Hangman():
         self.db.execute("""CREATE TABLE IF NOT EXISTS hangman
                         (id TEXT, Word TEXT, Guessed_Letters TEXT, Guesses_Left INT)""")
 
-    def insert_data(self, inquiry, inquiry2):
+    def check_id(self, username):
+        self.db.execute("SELECT id FROM hangman WHERE id = ?", [username])
+        if self.db.fetchone() == None:
+            return True
+
+    def insert_data(self, username, word):
         sql = """INSERT INTO hangman(id, Word)
                 VALUES (?, ?)"""
-        self.db.execute(sql, [inquiry, inquiry2])
+        self.db.execute(sql, [username, word])
 
-    # def update_guesses(self):
-
-    def get_word(self, inquiry):
-        word = self.db.execute("SELECT Word FROM hangman WHERE id = ?", [inquiry])
+    def retrieve_word(self, username):
+        word = self.db.execute("SELECT Word FROM hangman WHERE id = ?", [username])
         word = word.fetchone()
         return word[0]
 
-    def check_id(self, inquiry):
-        self.db.execute("SELECT id FROM hangman WHERE id = ?", [inquiry])
-        if self.db.fetchone() == None:
-            return True
+    def update_guesses(self, list, username):
+        self.db.execute("UPDATE hangman SET Guessed_Letters = ? WHERE id = ?", [list, username])
+        guess_list = self.db.execute("SELECT Guessed_Letters FROM hangman WHERE id = ?", [username])
+        guess_list = guess_list.fetchone()
+        print(guess_list)
+
+    def update_turns(self, turns, username):
+        self.db.execute("UPDATE hangman SET Guesses_Left = ? WHERE id = ?", [turns, username])
+        
+    def retrieve_guesses(self, username):
+        guess_list = self.db.execute("SELECT Guessed_Letters FROM hangman WHERE id = ?", [username])
+        guess_list = guess_list.fetchone()
+        return guess_list[0]
+
+    # def insert_guess(self, username):
+    #     self.db.execute("INSERT INTO Guessed_Letters FROM hangman WHERE id = ?", [username])
+
+    def commit_db(self):
+        self.conn_db.commit()
 
     def close_db(self):
         self.conn_db.commit()
         self.conn_db.close()
 
-    def clearTable(self):
+    def clear_table(self):
         self.db.execute("DROP TABLE hangman")
 
 # class Wordle():
