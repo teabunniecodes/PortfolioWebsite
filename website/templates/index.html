@@ -3,6 +3,9 @@
     <head>
         <title>Bunnie's Portfolio Website</title>
         <link href=".\static\css\style.css" type="text/css" rel="stylesheet" />
+        {% if current_user.is_authenticated %}
+        <p>Welcome {{ current_user.id }}</p>
+        {% endif %}
     </head>
     <body>
         <h1>Welcome to my Portfolio :D</h1>

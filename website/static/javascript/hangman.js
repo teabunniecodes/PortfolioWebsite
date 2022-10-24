@@ -95,14 +95,14 @@ function checkKey(e) {
     
     // }
 
-    function alphabetEvent(value) {
-        if ((turns > 0) && (gameBoard.style.display === "block")) {
-            validGuess(value);
-            button = document.getElementById(value);
-            classes = button.classList;
-            classes.toggle(className, true);
-        }
+function alphabetEvent(value) {
+    if ((turns > 0) && (gameBoard.style.display === "block")) {
+        validGuess(value);
+        button = document.getElementById(value);
+        classes = button.classList;
+        classes.toggle(className, true);
     }
+}
 
 function validGuess(guess) {
     guess = guess.toUpperCase()
@@ -117,13 +117,20 @@ function validGuess(guess) {
             guessLetter.textContent = `you guessed - ${guess}`;
             letterList.textContent = `${guessList}`;
             
+            // fetch("/hangman/api/gamestate")
+            //     .then((response) => response.json())
+            //     .then((guesses) => console.log(guesses))
+
             fetch("/hangman", {
                 headers: {
                     "Content-type": "application/json"
                 },
                 method: "POST",
                 body: JSON.stringify(guess)
+
             })
+            
+
             gameOver()
         }
     }
@@ -142,5 +149,10 @@ function switchViews() {
     }
 }
 
+
+fetch("/hangman/api/gamestate")
+    .then((response) => response.json())
+    .then((guesses) => console.log(guesses))
+    
 startGame()
 checkButton()

@@ -12,11 +12,14 @@
             <h3>Hangman :D</h3>
             <!-- <section class="full-guess"> -->
                 <section id="hidden-word">{{word}}</section><br>
-                <section id="turns-left">Turns Left - 6</section><section id="letter-guess">?</section><br>
-                <section id="letter-list">guesses</section><br>
-                {% with messages = get_flashed_messages() %} {% if messages %} {% for message in messages %}
+                <section id="turns-left">Turns Left - 6</section><br>
+                <section id="letter-guess">?</section><br>
+                <section id="letter-list">{{guesses}}
+                    <!-- <script type ="text/javascript">{{guesses}}</script> -->
+                </section><br>
+                <!-- {% with messages = get_flashed_messages() %} {% if messages %} {% for message in messages %}
                 <p>{{ message }}</p>
-                {% endfor %} {% endif %} {% endwith %} 
+                {% endfor %} {% endif %} {% endwith %}  -->
             <!-- </section> -->
 
             <div class="keyboard">

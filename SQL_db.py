@@ -71,14 +71,14 @@ class Hangman():
         word = word.fetchone()
         return word[0]
 
-    def update_guesses(self, list, username):
-        self.db.execute("UPDATE hangman SET Guessed_Letters = ? WHERE id = ?", [list, username])
-        guess_list = self.db.execute("SELECT Guessed_Letters FROM hangman WHERE id = ?", [username])
-        guess_list = guess_list.fetchone()
-        print(guess_list)
+    def update_data(self, list, turns, username):
+        self.db.execute("UPDATE hangman SET Guessed_Letters = ?, Guesses_Left= ? WHERE id = ?", [list, turns, username])
+        # guess_list = self.db.execute("SELECT Guessed_Letters FROM hangman WHERE id = ?", [username])
+        # guess_list = guess_list.fetchone()
+        # print(guess_list)
 
-    def update_turns(self, turns, username):
-        self.db.execute("UPDATE hangman SET Guesses_Left = ? WHERE id = ?", [turns, username])
+    # def update_turns(self, turns, username):
+    #     self.db.execute("UPDATE hangman SET Guesses_Left = ? WHERE id = ?", [turns, username])
         
     def retrieve_guesses(self, username):
         guess_list = self.db.execute("SELECT Guessed_Letters FROM hangman WHERE id = ?", [username])
