@@ -61,32 +61,34 @@ class Hangman():
         if self.db.fetchone() == None:
             return True
 
-    def insert_data(self, username, word):
+    def insert_data(self, username, word, ):
         sql = """INSERT INTO hangman(id, Word)
                 VALUES (?, ?)"""
-        self.db.execute(sql, [username, word])
+        self.db.execute(sql, [username, word ])
 
     def retrieve_word(self, username):
         word = self.db.execute("SELECT Word FROM hangman WHERE id = ?", [username])
         word = word.fetchone()
         return word[0]
 
-    def update_data(self, list, turns, username):
-        self.db.execute("UPDATE hangman SET Guessed_Letters = ?, Guesses_Left= ? WHERE id = ?", [list, turns, username])
-        # guess_list = self.db.execute("SELECT Guessed_Letters FROM hangman WHERE id = ?", [username])
-        # guess_list = guess_list.fetchone()
-        # print(guess_list)
-
-    # def update_turns(self, turns, username):
-    #     self.db.execute("UPDATE hangman SET Guesses_Left = ? WHERE id = ?", [turns, username])
-        
     def retrieve_guesses(self, username):
         guess_list = self.db.execute("SELECT Guessed_Letters FROM hangman WHERE id = ?", [username])
         guess_list = guess_list.fetchone()
         return guess_list[0]
 
-    # def insert_guess(self, username):
-    #     self.db.execute("INSERT INTO Guessed_Letters FROM hangman WHERE id = ?", [username])
+    def retrieve_turns(self, username):
+        turns = self.db.execute("SELECT Guesses_Left FROM hangman WHERE id = ?", [username])
+        turns = turns.fetchone()
+        return turns[0]
+
+    # # returns the guess_list and turns in a tuple
+    # def retrieve_data(self, username):
+    #     data = self.db.execute("SELECT Guessed_Letters, Guesses_Left FROM hangman WHERE id = ?", [username])
+    #     data = data.fetchone()
+    #     return data
+
+    def update_data(self, list, turns, username):
+        self.db.execute("UPDATE hangman SET Guessed_Letters = ?, Guesses_Left= ? WHERE id = ?", [list, turns, username])
 
     def commit_db(self):
         self.conn_db.commit()

@@ -7,16 +7,14 @@
     </head>
     <body>
         <section id="game-start">Do you want to play {% if current_user.is_authenticated %}{{ current_user.id }}{% endif %}?<br>
-            <button id = game-play>Play</button></section>
+            <button id ="game-play">Play</button></section>
         <section id="game-board" style="display: none;">
             <h3>Hangman :D</h3>
             <!-- <section class="full-guess"> -->
                 <section id="hidden-word">{{word}}</section><br>
                 <section id="turns-left">Turns Left - 6</section><br>
                 <section id="letter-guess">?</section><br>
-                <section id="letter-list">{{guesses}}
-                    <!-- <script type ="text/javascript">{{guesses}}</script> -->
-                </section><br>
+                <section id="letter-list">Guesses</section><br>
                 <!-- {% with messages = get_flashed_messages() %} {% if messages %} {% for message in messages %}
                 <p>{{ message }}</p>
                 {% endfor %} {% endif %} {% endwith %}  -->
@@ -59,6 +57,9 @@
                     <button class="keyboard-action" id="enter" value="enter">enter</button>
                 </section>
             </div>
+        </section>
+        <section id="game-over" style="display: none;">
+            <button id="play-again">Play Again?</button>
         </section>
         <p><a href="/">Back</a></p>
     </body>

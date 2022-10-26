@@ -1,24 +1,50 @@
 const keyboardButton = document.getElementsByClassName("keyboard-button")
 const keyboardAction = document.getElementsByClassName("keyboard-action")
+const hiddenWord = document.getElementById("hidden-word")
 const guessLetter = document.getElementById("letter-guess")
 const letterList = document.getElementById("letter-list")
 const turnsLeft = document.getElementById("turns-left")
 const gameBoard = document.getElementById("game-board")
 const gameStart = document.getElementById("game-start")
 const gamePlay = document.getElementById("game-play")
+const gameDone = document.getElementById("game-over")
+const playAgain = document.getElementById("play-again")
 const guessList = []
-let turns = 6
+let guess_list
+let turns
 let button = "x"
 let classes = "y"
 let className = "colored-button"
 let guessWord = false
 document.onkeyup = checkKey
 
+function getInitialGameState() {
+    fetch("/hangman/api/gamestate")
+        .then((response) => response.json())
+        .then((data) => {dataHandler(data, "?")})
+}
+
+function dataHandler(data, guess) {
+    guess_list = data["guesses"];
+    turns = data["turns"];
+    word = data["word"];
+    updateDOM(guess);
+    gameOver()
+}
+
 function startGame() {
     gamePlay.addEventListener ("click", e=> {
         gameStart.style.display = "none";
         switchViews();
     });
+}
+
+function restartGame() {
+    playAgain.addEventListener ("click", e=> {
+        gameDone.style.display = "none";
+        gameStart.style.display = "block";
+        gameBoard.style.display = "none";
+    })
 }
 
 function checkButton() {
@@ -90,11 +116,6 @@ function checkKey(e) {
     }
 }
 
-
-// function submitGuess(e) {
-    
-    // }
-
 function alphabetEvent(value) {
     if ((turns > 0) && (gameBoard.style.display === "block")) {
         validGuess(value);
@@ -112,14 +133,6 @@ function validGuess(guess) {
         }
         else {
             guessList.push(guess);
-            turns -= 1;
-            turnsLeft.textContent = `Turns Left : ${turns}`;
-            guessLetter.textContent = `you guessed - ${guess}`;
-            letterList.textContent = `${guessList}`;
-            
-            // fetch("/hangman/api/gamestate")
-            //     .then((response) => response.json())
-            //     .then((guesses) => console.log(guesses))
 
             fetch("/hangman", {
                 headers: {
@@ -127,32 +140,37 @@ function validGuess(guess) {
                 },
                 method: "POST",
                 body: JSON.stringify(guess)
-
             })
-            
-
-            gameOver()
+                .then((response) => response.json())
+                .then((data) => {dataHandler(data, guess)})
         }
     }
+}
+
+function updateDOM(guess) {
+    hiddenWord.textContent = `${word}`
+    turnsLeft.textContent = `Turns Left : ${turns}`;
+    guessLetter.textContent = `you guessed - ${guess}`; 
+    letterList.textContent = `${guess_list}`;
 }
 
 function gameOver() {
     if (turns == 0) {
         turnsLeft.textContent = `Turns Left : ${turns}`;
         guessLetter.textContent = `GAME OVER D:`;
+        // if (gameBoard.style.display === "block") {
+        gameDone.style.display = "block";
+        restartGame()
+        // }
     }
 }
 
 function switchViews() {
     if (gameStart.style.display === "none") {
-        gameBoard.style.display = "block"
+        gameBoard.style.display = "block";
     }
 }
-
-
-fetch("/hangman/api/gamestate")
-    .then((response) => response.json())
-    .then((guesses) => console.log(guesses))
     
 startGame()
 checkButton()
+getInitialGameState()
