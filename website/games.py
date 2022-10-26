@@ -49,6 +49,7 @@ def hangman():
             if guess_letter not in guesses:
                 guesses = ", ".join((guesses, guess_letter))
                 if guess_letter not in chosen_word:
+                    turns = db.retrieve_turns(user)
                     turns -= 1
                 else:
                     turns = db.retrieve_turns(user)
