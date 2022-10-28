@@ -7,10 +7,7 @@ const turnsLeft = document.getElementById("turns-left")
 const gameBoard = document.getElementById("game-board")
 const gameStart = document.getElementById("game-start")
 const gamePlay = document.getElementById("game-play")
-const gameDone = document.getElementById("game-over")
-const playAgain = document.getElementById("play-again")
-const guessList = []
-let guess_list
+let guessList
 let turns
 let button = "x"
 let classes = "y"
@@ -25,42 +22,43 @@ function getInitialGameState() {
 }
 
 function dataHandler(data, guess) {
-    guess_list = data["guesses"];
+    guessList = data["guesses"];
     turns = data["turns"];
     word = data["word"];
+    win = data["win"]
     updateDOM(guess);
-    gameOver()
+    gameWinOrLose();
 }
 
 function startGame() {
     gamePlay.addEventListener ("click", e=> {
         gameStart.style.display = "none";
         switchViews();
+            restartGame();
     });
 }
 
 function restartGame() {
-    playAgain.addEventListener ("click", e=> {
-        gameDone.style.display = "none";
-        gameStart.style.display = "block";
-        gameBoard.style.display = "none";
-    })
+    let guesses = guessList.replace(/, /g, "")
+    for (let letter of guesses) {
+        button = document.getElementById(letter.toLowerCase()).classList
+        button.toggle(className, true)
+    }
 }
 
 function checkButton() {
-    // Need to fix so the buttons no longer change colors if turns are 0
     for (let x=0; x < keyboardButton.length; x++) {
         keyboardButton[x].addEventListener("click", e => {
             alphabetEvent(keyboardButton[x].id)
             });
         }
+    // UI issue still with classList and highlighting the buttons when the game reloads - need to write code to highlight the letters that were already guessed
     for (let x=0; x < keyboardAction.length; x++) {
         keyboardAction[x].addEventListener("click", e => {
             button = document.getElementById(keyboardAction[x].id)
             classes = button.classList
-            if (button.id === "shift") {
+            if (button.id === "shift" && turns > 0 && win === false) {
                 guessWord = !guessWord
-                console.log(guessWord)
                 if (guessWord == true) {
                     classes.toggle(className, true)
                 }
@@ -72,8 +70,8 @@ function checkButton() {
                 if (button.id === "enter") {
                     turns = 0
                     guessWord = false
-                    gameOver()
-                    console.log(guessWord)
+                    document.getElementById("shift").classList.toggle(className, false)
+                    gameWinOrLose()
                 }
                 else if (button.id === "backspace") {
                     console.log("Delete")
@@ -84,15 +82,14 @@ function checkButton() {
 }
 
 function checkKey(e) {
-    if ((e.keyCode >= 65 && e.keyCode <= 90) || (e.keyCode >= 97 && e.keyCode <= 122) && (guessWord == false)) {
+    if ((e.keyCode >= 65 && e.keyCode <= 90) || (e.keyCode >= 97 && e.keyCode <= 122) && (guessWord === false)) {
         alphabetEvent(e.key)
     }
     // Look up enum for JS and refactor this code so it utilizes it
-    button = document.getElementById("shift")
+    button = document.getElementById("shift");
     classes = button.classList;
-    if (e.key === "Shift") {
+    if (e.key === "Shift" && win === false) {
         guessWord = !guessWord;
-        console.log(guessWord);
         if (guessWord == true) {
             classes.toggle(className, true);
         }
@@ -103,37 +100,32 @@ function checkKey(e) {
         if (guessWord == true) {
             if (e.key === "Enter") {
                 console.log(e.key + " is Enter");
-                console.log("This needs to check for the length of the word in future as well");
-                guessWord = false;
                 turns = 0;
-                gameOver()
-                // return e.keyCode;
+                guessWord = false;
+                classes.toggle(className, false)
+                gameWinOrLose()
             }
             else if (e.key === "Backspace") {
                 console.log(e.key + " is Backspace");
-                // return e.keyCode;
             }
     }
 }
 
 function alphabetEvent(value) {
-    if ((turns > 0) && (gameBoard.style.display === "block")) {
+    if (turns > 0 && gameBoard.style.display === "block" && win === false) {
         validGuess(value);
-        button = document.getElementById(value);
-        classes = button.classList;
-        classes.toggle(className, true);
+        button = document.getElementById(value).classList;
+        button.toggle(className, true);
     }
 }
 
 function validGuess(guess) {
     guess = guess.toUpperCase()
-    if (turns > 0){
+    if (turns > 0) {
         if (guessList.includes(guess)) {
             guessLetter.textContent = `You already guessed the letter ${guess}.  You want to waste a turn???`;
         }
         else {
-            guessList.push(guess);
-
             fetch("/hangman", {
                 headers: {
                     "Content-type": "application/json"
@@ -150,18 +142,17 @@ function validGuess(guess) {
 function updateDOM(guess) {
     hiddenWord.textContent = `${word}`
     turnsLeft.textContent = `Turns Left : ${turns}`;
-    guessLetter.textContent = `you guessed - ${guess}`; 
-    letterList.textContent = `${guess_list}`;
+    guessLetter.textContent = `You just guessed - ${guess}`; 
+    letterList.textContent = `You have already guessed - ${guessList}`;
 }
 
-function gameOver() {
+function gameWinOrLose() {
     if (turns == 0) {
         turnsLeft.textContent = `Turns Left : ${turns}`;
         guessLetter.textContent = `GAME OVER D:`;
-        // if (gameBoard.style.display === "block") {
-        gameDone.style.display = "block";
-        restartGame()
-        // }
+    }
+    else if (win) {
+        guessLetter.textContent = `YAY Congrats!`;
     }
 }
 

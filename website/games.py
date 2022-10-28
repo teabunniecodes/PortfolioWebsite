@@ -66,22 +66,23 @@ def game_state():
     db = SQL_db.Hangman()
     db.connect_db()
     user = current_user.get_id()
-    word = db.retrieve_word(user)
+    word = db.retrieve_word(user).strip("\n")
     guess_word = (len(word.strip("\n"))) * "_"
     guess_word = list(map(str, guess_word))
     guesses = db.retrieve_guesses(user)
     turns = db.retrieve_turns(user)
+    win = False
     if guesses == None:
         turns = 6
-        guesses = "Please guess a letter"
-    # else:
-    #     turns = db.retrieve_turns(user)
+        guesses = ""
     for guess_letter in guesses:
         if guess_letter in word:
             for index, letter in enumerate(word):
                 if guess_letter == word[index] and guess_letter == letter:
                     guess_word[index] = letter
-    return jsonify(guesses = guesses, turns = turns, word = " ".join(guess_word))
+    if "".join(guess_word) == word and turns > 0:
+        win = True
+    return jsonify(guesses = guesses, turns = turns, word = " ".join(guess_word), win = win)
 
 @games.route('/madlibs')
 def madlibs():
