@@ -86,15 +86,15 @@ function checkKey(e) {
         alphabetEvent(e.key)
     }
     // Look up enum for JS and refactor this code so it utilizes it
-    button = document.getElementById("shift");
-    classes = button.classList;
-    if (e.key === "Shift" && win === false) {
+    button = document.getElementById("shift").classList;
+    // classes = button.classList;
+    if (e.key === "Shift" && turns > 0 && win === false) {
         guessWord = !guessWord;
         if (guessWord == true) {
-            classes.toggle(className, true);
+            button.toggle(className, true);
         }
         else {
-            classes.toggle(className, false);
+            button.toggle(className, false);
         }
     }
         if (guessWord == true) {
@@ -102,7 +102,7 @@ function checkKey(e) {
                 console.log(e.key + " is Enter");
                 turns = 0;
                 guessWord = false;
-                classes.toggle(className, false)
+                button.toggle(className, false)
                 gameWinOrLose()
             }
             else if (e.key === "Backspace") {
