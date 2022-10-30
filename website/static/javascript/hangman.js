@@ -7,10 +7,8 @@ const turnsLeft = document.getElementById("turns-left")
 const gameBoard = document.getElementById("game-board")
 const gameStart = document.getElementById("game-start")
 const gamePlay = document.getElementById("game-play")
-let guessList
-let turns
-let button = "x"
-let classes = "y"
+let guessList, turns, classes, button
+let fullGuess = []
 let className = "colored-button"
 let guessWord = false
 document.onkeyup = checkKey
@@ -19,6 +17,18 @@ function getInitialGameState() {
     fetch("/hangman/api/gamestate")
         .then((response) => response.json())
         .then((data) => {dataHandler(data, "?")})
+}
+
+function fetchGuess(guess) {
+    fetch("/hangman", {
+        headers: {
+            "Content-type": "application/json"
+        },
+        method: "POST",
+        body: JSON.stringify(guess)
+    })
+        .then((response) => response.json())
+        .then((data) => {dataHandler(data, guess)})
 }
 
 function dataHandler(data, guess) {
@@ -34,11 +44,11 @@ function startGame() {
     gamePlay.addEventListener ("click", e=> {
         gameStart.style.display = "none";
         switchViews();
-            restartGame();
+        colorMultipleButtons();
     });
 }
 
-function restartGame() {
+function colorMultipleButtons() {
     let guesses = guessList.replace(/, /g, "")
     for (let letter of guesses) {
         button = document.getElementById(letter.toLowerCase()).classList
@@ -61,9 +71,11 @@ function checkButton() {
                 guessWord = !guessWord
                 if (guessWord == true) {
                     classes.toggle(className, true)
+                    hiddenWord.textContent = fullGuess
                 }
                 else {
                     classes.toggle(className, false)
+                    hiddenWord.textContent = `${word}`
                 }
             }
             if (guessWord == true) {
@@ -75,6 +87,7 @@ function checkButton() {
                 }
                 else if (button.id === "backspace") {
                     console.log("Delete")
+                    fullGuess.pop();
                 }
             }
         })
@@ -92,30 +105,41 @@ function checkKey(e) {
         guessWord = !guessWord;
         if (guessWord == true) {
             button.toggle(className, true);
+            hiddenWord.textContent = "Guess the word"
         }
         else {
             button.toggle(className, false);
+            hiddenWord.textContent = `${word}`
+            fullGuess.length = 0
         }
     }
         if (guessWord == true) {
             if (e.key === "Enter") {
-                console.log(e.key + " is Enter");
-                turns = 0;
+                // Need to color the buttons of the letters that were typed
                 guessWord = false;
                 button.toggle(className, false)
+                fetchGuess(fullGuess.join(""))
                 gameWinOrLose()
+                fullGuess.length = 0
             }
             else if (e.key === "Backspace") {
                 console.log(e.key + " is Backspace");
+                fullGuess.pop();
+                hiddenWord.textContent = fullGuess.join(" ")
             }
     }
 }
 
 function alphabetEvent(value) {
     if (turns > 0 && gameBoard.style.display === "block" && win === false) {
-        validGuess(value);
-        button = document.getElementById(value).classList;
-        button.toggle(className, true);
+        if (guessWord == false) {
+            validGuess(value);
+            button = document.getElementById(value).classList;
+            button.toggle(className, true);
+        }
+        else {
+            getFullGuess(value)
+        }
     }
 }
 
@@ -126,33 +150,33 @@ function validGuess(guess) {
             guessLetter.textContent = `You already guessed the letter ${guess}.  You want to waste a turn???`;
         }
         else {
-            fetch("/hangman", {
-                headers: {
-                    "Content-type": "application/json"
-                },
-                method: "POST",
-                body: JSON.stringify(guess)
-            })
-                .then((response) => response.json())
-                .then((data) => {dataHandler(data, guess)})
+            fetchGuess(guess)
         }
     }
+}
+
+function getFullGuess(guess) {
+    fullGuess.push(guess.toUpperCase())
+    hiddenWord.textContent = fullGuess.join(" ")
 }
 
 function updateDOM(guess) {
     hiddenWord.textContent = `${word}`
     turnsLeft.textContent = `Turns Left : ${turns}`;
     guessLetter.textContent = `You just guessed - ${guess}`; 
-    letterList.textContent = `You have already guessed - ${guessList}`;
+    letterList.textContent = `Letters Guessed - ${guessList}`;
 }
 
 function gameWinOrLose() {
+    colorMultipleButtons()
     if (turns == 0) {
         turnsLeft.textContent = `Turns Left : ${turns}`;
         guessLetter.textContent = `GAME OVER D:`;
+        letterList.textContent = `You were so close!`
     }
     else if (win) {
         guessLetter.textContent = `YAY Congrats!`;
+        letterList.textContent = `You WON!!!!! :D :D :D`;
     }
 }
 
@@ -160,6 +184,12 @@ function switchViews() {
     if (gameStart.style.display === "none") {
         gameBoard.style.display = "block";
     }
+    // if (hiddenWord.style.display = "none") {
+    //     userFullGuess.style.display = "block"
+    // }
+    // else if (hiddenWord.style.display = "block") {
+    //     userFullGuess.style.display = "none"
+    // }
 }
     
 startGame()

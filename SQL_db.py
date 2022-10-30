@@ -61,10 +61,10 @@ class Hangman():
         if self.db.fetchone() == None:
             return True
 
-    def insert_data(self, username, word, ):
-        sql = """INSERT INTO hangman(id, Word)
-                VALUES (?, ?)"""
-        self.db.execute(sql, [username, word ])
+    def insert_data(self, username, word):
+        sql = """INSERT INTO hangman(id, Word, Guessed_Letters, Guesses_Left)
+                VALUES (?, ?, ?, ?)"""
+        self.db.execute(sql, [username, word, "", 6])
 
     def retrieve_word(self, username):
         word = self.db.execute("SELECT Word FROM hangman WHERE id = ?", [username])

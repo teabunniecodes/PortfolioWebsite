@@ -30,33 +30,49 @@ def hangman():
         else:
             chosen_word = db.retrieve_word(user)
             guesses = db.retrieve_guesses(user)
-            # once I reset the database can remove the strip function under
-            guess_word = (len(chosen_word.strip("\n"))) * "_ "
+            guess_word = (len(chosen_word)) * "_ "
             return render_template("hangman.html", word = guess_word)
 
     # POST method
     if request.method == "POST":
-        turns = 6
-        guess_letter = request.get_data(as_text=Literal[True]).strip('"')
+        turns = db.retrieve_turns(user)
+        user_guess = request.get_data(as_text=Literal[True]).strip('"')
         guesses = db.retrieve_guesses(user)
         chosen_word = db.retrieve_word(user)
-        if guesses == None:
-            if guess_letter not in chosen_word:
+        if guesses == "":
+            if user_guess not in chosen_word and len(user_guess) == 1:
+                guesses = user_guess
                 turns -= 1
-            db.update_data(guess_letter, turns, user)
-            db.commit_db()
-        else:
-            if guess_letter not in guesses:
-                guesses = ", ".join((guesses, guess_letter))
-                if guess_letter not in chosen_word:
-                    turns = db.retrieve_turns(user)
-                    turns -= 1
-                else:
-                    turns = db.retrieve_turns(user)
             else:
-                print("This letter was already guessed")
+                guesses = user_guess
+        else:
+            if user_guess not in guesses and len(user_guess) == 1:
+                guesses = ", ".join((guesses, user_guess))
+                if user_guess not in chosen_word:
+                    turns -= 1
+                # else:
+                #     turns = db.retrieve_turns(user)
+        db.update_data(guesses, turns, user)
+        db.commit_db()
+            # else:
+            #     print("This letter was already guessed")
+        if len(user_guess) == len(chosen_word):
+            # if guesses == "":
+            #     print("You really want to guess the full word for your first turn??")
+            if user_guess != chosen_word:
+                for letter in user_guess:
+                    guesses = ", ".join((guesses, letter))
+                turns = 0
+            else:
+                for letter in user_guess:
+                    guesses = ", ".join((guesses, letter))
+                    # db.update_data(user_guess, turns, user)
+                    # db.commit_db()
             db.update_data(guesses, turns, user)
             db.commit_db()
+        # Need to tie to client side so when they enter invalid option game yells at them
+        else:
+            pass
         return game_state()
     db.close_db()
    
@@ -66,13 +82,13 @@ def game_state():
     db = SQL_db.Hangman()
     db.connect_db()
     user = current_user.get_id()
-    word = db.retrieve_word(user).strip("\n")
-    guess_word = (len(word.strip("\n"))) * "_"
+    word = db.retrieve_word(user)
+    guess_word = (len(word)) * "_"
     guess_word = list(map(str, guess_word))
     guesses = db.retrieve_guesses(user)
     turns = db.retrieve_turns(user)
     win = False
-    if guesses == None:
+    if guesses == "":
         turns = 6
         guesses = ""
     for guess_letter in guesses:
