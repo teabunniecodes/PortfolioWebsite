@@ -31,7 +31,7 @@ def hangman():
             chosen_word = db.retrieve_word(user)
             guesses = db.retrieve_guesses(user)
             guess_word = (len(chosen_word)) * "_ "
-            return render_template("hangman.html", word = guess_word)
+            return render_template("hangman.html", word = guess_word) 
 
     # POST method
     if request.method == "POST":
@@ -98,6 +98,28 @@ def game_state():
                     guess_word[index] = letter
     if "".join(guess_word) == word and turns > 0:
         win = True
+    return jsonify(guesses = guesses, turns = turns, word = " ".join(guess_word), win = win)
+
+@games.route("hangman/api/reset_game")
+@login_required
+def reset_game():
+    db = SQL_db.Hangman()
+    db.connect_db()
+    user = current_user.get_id()
+    db.restart_user_game(user)
+    with open("./text documents/hangman-wordlist.txt") as read:
+        words = list(map(str, read))
+        chosen_word = random.choice(words).strip("\n")
+        chosen_word = chosen_word.upper()
+        guess_word = len(chosen_word) * "_ "
+    db.insert_data(current_user.get_id(), chosen_word)
+    db.commit_db()
+    word = db.retrieve_word(user)
+    guess_word = (len(word)) * "_"
+    guess_word = list(map(str, guess_word))
+    guesses = db.retrieve_guesses(user)
+    turns = db.retrieve_turns(user)
+    win = False
     return jsonify(guesses = guesses, turns = turns, word = " ".join(guess_word), win = win)
 
 @games.route('/madlibs')

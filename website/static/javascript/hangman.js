@@ -7,6 +7,7 @@ const turnsLeft = document.getElementById("turns-left")
 const gameBoard = document.getElementById("game-board")
 const gameStart = document.getElementById("game-start")
 const gamePlay = document.getElementById("game-play")
+const playAgain = document.getElementById("play-again")
 let guessList, turns, classes, button
 let fullGuess = []
 let className = "colored-button"
@@ -17,6 +18,14 @@ function getInitialGameState() {
     fetch("/hangman/api/gamestate")
         .then((response) => response.json())
         .then((data) => {dataHandler(data, "?")})
+}
+
+function resetUserGame() {
+    colorMultipleButtons(false)
+    fetch("hangman/api/reset_game")
+        .then((response) => response.json())
+        .then((data) => {dataHandler(data, "?")})
+    playAgain.style.display = "none"
 }
 
 function fetchGuess(guess) {
@@ -44,15 +53,16 @@ function startGame() {
     gamePlay.addEventListener ("click", e=> {
         gameStart.style.display = "none";
         switchViews();
-        colorMultipleButtons();
+        colorMultipleButtons(true);
+        resetGame()
     });
 }
 
-function colorMultipleButtons() {
+function colorMultipleButtons(boolean) {
     let guesses = guessList.replace(/, /g, "")
     for (let letter of guesses) {
         button = document.getElementById(letter.toLowerCase()).classList
-        button.toggle(className, true)
+        button.toggle(className, boolean)
     }
 }
 
@@ -71,11 +81,12 @@ function checkButton() {
                 guessWord = !guessWord
                 if (guessWord == true) {
                     classes.toggle(className, true)
-                    hiddenWord.textContent = fullGuess
+                    hiddenWord.textContent = "Guess the word"
                 }
                 else {
                     classes.toggle(className, false)
                     hiddenWord.textContent = `${word}`
+                    fullGuess.length = 0
                 }
             }
             if (guessWord == true) {
@@ -83,11 +94,16 @@ function checkButton() {
                     turns = 0
                     guessWord = false
                     document.getElementById("shift").classList.toggle(className, false)
+                    if (guessList.length) {
+                        fetchGuess(fullGuess.join(""))
+                    }
+                    console.log(word)
                     gameWinOrLose()
+                    fullGuess.length = 0
                 }
-                else if (button.id === "backspace") {
-                    console.log("Delete")
+                else if (button.id === "delete") {
                     fullGuess.pop();
+                    hiddenWord.textContent = fullGuess.join(" ")
                 }
             }
         })
@@ -115,15 +131,15 @@ function checkKey(e) {
     }
         if (guessWord == true) {
             if (e.key === "Enter") {
-                // Need to color the buttons of the letters that were typed
                 guessWord = false;
                 button.toggle(className, false)
-                fetchGuess(fullGuess.join(""))
+                if (guessList.length) {
+                    fetchGuess(fullGuess.join(""))
+                }
                 gameWinOrLose()
                 fullGuess.length = 0
             }
             else if (e.key === "Backspace") {
-                console.log(e.key + " is Backspace");
                 fullGuess.pop();
                 hiddenWord.textContent = fullGuess.join(" ")
             }
@@ -168,29 +184,48 @@ function updateDOM(guess) {
 }
 
 function gameWinOrLose() {
-    colorMultipleButtons()
+    colorMultipleButtons(true)
     if (turns == 0) {
         turnsLeft.textContent = `Turns Left : ${turns}`;
         guessLetter.textContent = `GAME OVER D:`;
-        letterList.textContent = `You were so close!`
+        if (fullGuess) {
+            letterList.textContent = `You were so close!`
+        }
+        else {
+            letterList.textContent = `You were so close! You guessed ${fullGuess.join("")}`
+        }
     }
     else if (win) {
         guessLetter.textContent = `YAY Congrats!`;
         letterList.textContent = `You WON!!!!! :D :D :D`;
     }
+    resetGame()
 }
 
 function switchViews() {
     if (gameStart.style.display === "none") {
         gameBoard.style.display = "block";
     }
-    // if (hiddenWord.style.display = "none") {
-    //     userFullGuess.style.display = "block"
-    // }
-    // else if (hiddenWord.style.display = "block") {
-    //     userFullGuess.style.display = "none"
-    // }
 }
+
+function resetGame() {
+    // when the game is over the user will be able to reset the game with a play again button showing up
+    // the play again button will have an event that send message to server side to reset their word and turns
+    if ((win || turns === 0) && (gameBoard.style.display === "block")) {
+        playAgain.style.display = "block"
+        playAgain.addEventListener("click", resetUserGame)
+    }
+}
+
+// fetch("/hangman", {
+//     headers: {
+//         "Content-type": "application/json"
+//     },
+//     method: "POST",
+//     body: JSON.stringify(guess)
+// })
+//     .then((response) => response.json())
+//     .then((data) => {dataHandler(data, guess)})
     
 startGame()
 checkButton()

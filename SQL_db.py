@@ -81,14 +81,11 @@ class Hangman():
         turns = turns.fetchone()
         return turns[0]
 
-    # # returns the guess_list and turns in a tuple
-    # def retrieve_data(self, username):
-    #     data = self.db.execute("SELECT Guessed_Letters, Guesses_Left FROM hangman WHERE id = ?", [username])
-    #     data = data.fetchone()
-    #     return data
-
     def update_data(self, list, turns, username):
         self.db.execute("UPDATE hangman SET Guessed_Letters = ?, Guesses_Left= ? WHERE id = ?", [list, turns, username])
+
+    def restart_user_game(self, username):
+        self.db.execute("DELETE FROM hangman WHERE id = ?", [username])
 
     def commit_db(self):
         self.conn_db.commit()
