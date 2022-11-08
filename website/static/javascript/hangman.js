@@ -171,6 +171,7 @@ function validGuess(guess) {
     }
 }
 
+// TODO Need to fix that when they guess the full word, if it's wrong it doesn't add any letters to the guessed word if it's not at the correct index
 function getFullGuess(guess) {
     fullGuess.push(guess.toUpperCase())
     hiddenWord.textContent = fullGuess.join(" ")

@@ -1,4 +1,3 @@
-from select import select
 import sqlite3
 
 class User_Info():
@@ -43,7 +42,7 @@ class User_Info():
         self.conn_db.commit()
         self.conn_db.close()
 
-# just create new tables for each of the subsequent datas
+# look into setting up 1 database for all games and having game_state be a JSON object (Mongo, schemaless-database, NoSQL)
 
 # class Leader_Board():
 
@@ -81,8 +80,8 @@ class Hangman():
         turns = turns.fetchone()
         return turns[0]
 
-    def update_data(self, list, turns, username):
-        self.db.execute("UPDATE hangman SET Guessed_Letters = ?, Guesses_Left= ? WHERE id = ?", [list, turns, username])
+    def update_data(self, letters, turns, username):
+        self.db.execute("UPDATE hangman SET Guessed_Letters = ?, Guesses_Left= ? WHERE id = ?", [letters, turns, username])
 
     def restart_user_game(self, username):
         self.db.execute("DELETE FROM hangman WHERE id = ?", [username])
@@ -97,6 +96,44 @@ class Hangman():
     def clear_table(self):
         self.db.execute("DROP TABLE hangman")
 
-# class Wordle():
+class wordle():
+    def connect_db(self):
+        self.conn_db = sqlite3.connect("DB/database.db")
+        self.db = self.conn_db.cursor()
+
+    def create_table(self):
+        self.db.execute("""CREATE TABLE IF NOT EXISTS wordle
+        (id TEXT, Word TEXT, Guessed_Letters TEXT, Guessed_Words TEXT)""")
+
+    def check_id(self, username):
+        self.db.execute("SELECT id FROM wordle WHERE id = ?", [username])
+        if self.db.fetchone() == None:
+            return True
+
+    def insert_data(self, username, word):
+        sql = """INSERT INTO wordle(id, Word, Guessed_Letters, Guessed_Words)
+                VALUES (?, ?, ?, ?)"""
+        self.db.execute(sql, [username, word, "", ""])
+
+    def retrieve_word(self, username):
+        word = self.db.execute("SELECT Word FROM wordle where id = ?", [username])
+        word = word.fetchone()
+        return(word[0])
+
+    def update_data(self, letters, guesses, username):
+        self.db.execute("UPDATE wordle SET Guessed_Letters = ?, Guessed_Words = ? WHERE id = ?", [letters, guesses, username])
+
+    def restart_user_game(self, username):
+        self.db.execute("DELETE FROM wordle WHERE id = ?", [username])
+
+    def commit_db(self):
+        self.conn_db.commit()
+
+    def close_db(self):
+        self.conn_db.commit()
+        self.conn_db.close()
+
+    def clear_table(self):
+        self.db.execute("DROP TABLE wordle")
 
 # class Mood_Tracker():

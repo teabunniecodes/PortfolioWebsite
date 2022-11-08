@@ -6,7 +6,7 @@ import SQL_db
 
 games = Blueprint('games', __name__)
 
-@games.route("/hangman", methods=["GET", "POST"])
+@games.route('/hangman', methods=['GET', 'POST'])
 @login_required
 def hangman():
     db = SQL_db.Hangman()
@@ -17,13 +17,13 @@ def hangman():
     # GET method
     if request.method == "GET":
         # checks if the user has a word tied to their account - if they do not, a new word is assigned
-        if db.check_id(current_user.get_id()):
+        if db.check_id(user):
             with open("./text documents/hangman-wordlist.txt") as read:
                 words = list(map(str, read))
                 chosen_word = random.choice(words).strip("\n")
                 chosen_word = chosen_word.upper()
                 guess_word = len(chosen_word) * "_ "
-            db.insert_data(current_user.get_id(), chosen_word)
+            db.insert_data(user, chosen_word)
             db.commit_db()
             return render_template("hangman.html", word = guess_word)
         # if user already exists in data base this retrieves the word and sends it to the client
@@ -76,7 +76,7 @@ def hangman():
         return game_state()
     db.close_db()
    
-@games.route("hangman/api/gamestate")
+@games.route('hangman/api/gamestate')
 @login_required
 def game_state():
     db = SQL_db.Hangman()
@@ -100,7 +100,7 @@ def game_state():
         win = True
     return jsonify(guesses = guesses, turns = turns, word = " ".join(guess_word), win = win)
 
-@games.route("hangman/api/reset_game")
+@games.route('hangman/api/reset_game')
 @login_required
 def reset_game():
     db = SQL_db.Hangman()
@@ -122,10 +122,32 @@ def reset_game():
     win = False
     return jsonify(guesses = guesses, turns = turns, word = " ".join(guess_word), win = win)
 
+@games.route('/wordle', methods=['GET', 'POST'])
+@login_required
+def wordle():
+    db = SQL_db.wordle()
+    db.connect_db()
+    db.create_table()
+    # db.clear_table()
+    user = current_user.get_id()
+
+    if request.method == "GET":
+        if db.check_id(user):
+            with open("./text documents/wordle-words.txt") as read:
+                words = list(map(str, read))
+                chosen_word = random.choice(words).strip("\n")
+                chosen_word = chosen_word.upper()
+            db.insert_data(user, chosen_word)
+            db.commit_db()
+            return render_template('wordle.html')
+        else:
+            db.retrieve_word(user)
+            return render_template('wordle.html')
+
 @games.route('/madlibs')
 def madlibs():
-    return render_template("madlibs.html")
+    return render_template('madlibs.html')
 
 @games.route('/rps')
 def rps():
-    return render_template("rockpaperscissors.html")
+    return render_template('rockpaperscissors.html')
