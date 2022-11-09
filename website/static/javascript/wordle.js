@@ -15,7 +15,7 @@ function fetchGuess(guess) {
             "Content-type": "application/json"
         },
         method: "POST",
-        body: JSON.stringify(guess)
+        body: JSON.stringify(guess.toLowerCase())
     })
     .then((response) => response.json())
     .then((data) => console.log(data))

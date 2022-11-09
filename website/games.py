@@ -130,13 +130,17 @@ def wordle():
     db.create_table()
     user = current_user.get_id()
     # db.clear_table()
+    with open("./text documents/wordle-words.txt") as wordle_words:
+        wordle_words = wordle_words.read().strip("\n")
+    with open("./text documents/wordle-dictionary.txt") as dictionary:
+        dictionary = dictionary.read().strip("\n")
+
 
     if request.method == "GET":
         if db.check_id(user):
             with open("./text documents/wordle-words.txt") as read:
-                words = list(map(str, read))
-                chosen_word = random.choice(words).strip("\n")
-                chosen_word = chosen_word.upper()
+                wordle_words = list(map(str, read))
+            chosen_word = random.choice(wordle_words).strip("\n")
             db.insert_data(user, chosen_word)
             db.commit_db()
             return render_template('wordle.html')
@@ -146,9 +150,30 @@ def wordle():
 
     if request.method == "POST":
         user_guess = request.get_data(as_text=Literal[True]).strip('"')
-        print(user_guess)
-        return jsonify(user_guess)
-    db.close_db()
+        chosen_word = db.retrieve_word(user)
+        guess_letters = list(user_guess)
+        chosen_letters = list(chosen_word)
+        words = db.retrieve_guessed_words(user)
+        if words == "":
+            db.update_data(", ".join(guess_letters), user_guess, user)
+        else:
+            words = db.retrieve_guessed_words(user)
+            words = ", ".join((words, user_guess))
+            for x in user_guess:
+                letters = db.retrieve_guessed_letters(user)
+                if x not in letters:
+                    letters = ", ".join((letters, x))
+                    db.update_data(letters, words, user)
+        if user_guess in wordle_words or user_guess in dictionary:
+            for x in range(len(user_guess)):
+                if guess_letters[x] == chosen_word[x]:
+                    chosen_letters[x] = "*"
+            for x, letter in enumerate(user_guess):
+                if letter in chosen_letters:
+                    if guess_letters[x] != chosen_word[x]:
+                        chosen_letters[chosen_letters.index(letter)] = "*"
+        db.commit_db()
+    return jsonify(user_guess)
 
 @games.route('/madlibs')
 def madlibs():

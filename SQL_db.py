@@ -103,7 +103,7 @@ class Wordle():
 
     def create_table(self):
         self.db.execute("""CREATE TABLE IF NOT EXISTS wordle
-        (id TEXT, Word TEXT, Guessed_Letters TEXT, Guessed_Words TEXT)""")
+        (id TEXT, Word TEXT, Guessed_Letters TEXT, Green_Letters TEXT, Yellow_Letters TEXT, Guessed_Words TEXT)""")
 
     def check_id(self, username):
         self.db.execute("SELECT id FROM wordle WHERE id = ?", [username])
@@ -111,17 +111,33 @@ class Wordle():
             return True
 
     def insert_data(self, username, word):
-        sql = """INSERT INTO wordle(id, Word, Guessed_Letters, Guessed_Words)
-                VALUES (?, ?, ?, ?)"""
-        self.db.execute(sql, [username, word, "", ""])
+        sql = """INSERT INTO wordle(id, Word, Guessed_Letters, Green_Letters, Yellow_Letters, Guessed_Words)
+                VALUES (?, ?, ?, ?, ?, ?)"""
+        self.db.execute(sql, [username, word, "", "", "", ""])
 
     def retrieve_word(self, username):
         word = self.db.execute("SELECT Word FROM wordle where id = ?", [username])
         word = word.fetchone()
-        return(word[0])
+        return word[0]
+
+    def retrieve_guessed_letters(self, username):
+        letters = self.db.execute("SELECT Guessed_Letters FROM wordle where id = ?", [username])
+        letters = letters.fetchone()
+        return letters[0]
+
+    def retrieve_guessed_words(self, username):
+        guessed_words = self.db.execute("SELECT Guessed_Words from wordle WHERE id = ?", [username])
+        guessed_words = guessed_words.fetchone()
+        return guessed_words[0]
 
     def update_data(self, letters, guesses, username):
         self.db.execute("UPDATE wordle SET Guessed_Letters = ?, Guessed_Words = ? WHERE id = ?", [letters, guesses, username])
+
+    def update_green_letters(self, letters, username):
+        self.db.execute("UPDATE wordle SET Green_Letters = ? WHERE id = ?", [letters, username])
+    
+    def update_yellow_letters(self, letters, username):
+        self.db.execute("UPDATE wordle SET Yellow_Letters = ? WHERE id = ?", [letters, username])
 
     def restart_user_game(self, username):
         self.db.execute("DELETE FROM wordle WHERE id = ?", [username])
