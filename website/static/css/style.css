@@ -41,6 +41,14 @@ button:active {
     background-color: blueviolet;
 }
 
+.correct-guess {
+    background-color: aquamarine;
+}
+
+.incorrect-guess {
+    background-color: palegoldenrod;
+}
+
 .row {
     display: flex;
     flex-direction: row;

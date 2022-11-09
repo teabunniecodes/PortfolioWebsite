@@ -96,7 +96,7 @@ class Hangman():
     def clear_table(self):
         self.db.execute("DROP TABLE hangman")
 
-class wordle():
+class Wordle():
     def connect_db(self):
         self.conn_db = sqlite3.connect("DB/database.db")
         self.db = self.conn_db.cursor()

@@ -125,11 +125,11 @@ def reset_game():
 @games.route('/wordle', methods=['GET', 'POST'])
 @login_required
 def wordle():
-    db = SQL_db.wordle()
+    db = SQL_db.Wordle()
     db.connect_db()
     db.create_table()
-    # db.clear_table()
     user = current_user.get_id()
+    # db.clear_table()
 
     if request.method == "GET":
         if db.check_id(user):
@@ -143,6 +143,12 @@ def wordle():
         else:
             db.retrieve_word(user)
             return render_template('wordle.html')
+
+    if request.method == "POST":
+        user_guess = request.get_data(as_text=Literal[True]).strip('"')
+        print(user_guess)
+        return jsonify(user_guess)
+    db.close_db()
 
 @games.route('/madlibs')
 def madlibs():
