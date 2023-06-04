@@ -73,12 +73,12 @@ def hangman():
         # Need to tie to client side so when they enter invalid option game yells at them
         else:
             pass
-        return game_state()
+        return game_state_hangman()
     db.close_db()
    
 @games.route('hangman/api/gamestate')
 @login_required
-def game_state():
+def game_state_hangman():
     db = SQL_db.Hangman()
     db.connect_db()
     user = current_user.get_id()
@@ -135,7 +135,6 @@ def wordle():
     with open("./text documents/wordle-dictionary.txt") as dictionary:
         dictionary = dictionary.read().strip("\n")
 
-
     if request.method == "GET":
         if db.check_id(user):
             with open("./text documents/wordle-words.txt") as read:
@@ -154,17 +153,17 @@ def wordle():
         guess_letters = list(user_guess)
         chosen_letters = list(chosen_word)
         words = db.retrieve_guessed_words(user)
-        if words == "":
-            db.update_data(", ".join(guess_letters), user_guess, user)
-        else:
-            words = db.retrieve_guessed_words(user)
-            words = ", ".join((words, user_guess))
-            for x in user_guess:
-                letters = db.retrieve_guessed_letters(user)
-                if x not in letters:
-                    letters = ", ".join((letters, x))
-                    db.update_data(letters, words, user)
         if user_guess in wordle_words or user_guess in dictionary:
+            if words == "":
+                    db.update_data(", ".join(guess_letters), user_guess, user)
+            else:
+                words = db.retrieve_guessed_words(user)
+                words = ", ".join((words, user_guess))
+                for x in user_guess:
+                    letters = db.retrieve_guessed_letters(user)
+                    if x not in letters:
+                        letters = ", ".join((letters, x))
+                        db.update_data(letters, words, user)
             for x in range(len(user_guess)):
                 if guess_letters[x] == chosen_word[x]:
                     chosen_letters[x] = "*"
@@ -173,7 +172,35 @@ def wordle():
                     if guess_letters[x] != chosen_word[x]:
                         chosen_letters[chosen_letters.index(letter)] = "*"
         db.commit_db()
-    return jsonify(user_guess)
+    return game_state_wordle()
+
+@games.route('/wordle/api/gamestate')
+@login_required
+def game_state_wordle():
+    db = SQL_db.Wordle()
+    db.connect_db()
+    db.create_table()
+    user = current_user.get_id()
+    with open("./text documents/wordle-words.txt") as wordle_words:
+        wordle_words = wordle_words.read().strip("\n")
+    with open("./text documents/wordle-dictionary.txt") as dictionary:
+        dictionary = dictionary.read().strip("\n")
+    user_guess = request.get_data(as_text=Literal[True]).strip('"')
+    chosen_word = db.retrieve_word(user)
+    guess_letters = list(user_guess)
+    chosen_letters = list(chosen_word)
+    words = db.retrieve_guessed_words(user)
+    is_word = False
+    is_win = False
+    print(user_guess)
+    if user_guess in wordle_words or user_guess in dictionary:
+        is_word = True
+        if user_guess == chosen_word:
+            is_win = True
+    else:
+        is_word = False
+    return jsonify(user_guess = user_guess, is_word = is_word, win = is_win)
+
 
 @games.route('/madlibs')
 def madlibs():

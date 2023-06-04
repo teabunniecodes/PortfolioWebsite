@@ -13,7 +13,7 @@ def create_app():
     app.register_blueprint(games, url_prefix='/')
 
     login_manager = LoginManager()
-    login_manager.login_view = "user"
+    login_manager.login_view = "views.user"
     login_manager.init_app(app)
 
     @login_manager.user_loader

@@ -29,7 +29,7 @@ class User(UserMixin):
           return False
 
      def is_authenticated(self):
-          return self.authenticated
+          return self.authenticated()
 
      def get_id(self):
           return self.id

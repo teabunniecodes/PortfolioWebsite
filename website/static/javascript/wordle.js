@@ -2,11 +2,37 @@ const keyboardButton = document.getElementsByClassName("keyboard-button")
 const keyboardAction = document.getElementsByClassName("keyboard-action")
 const guesses = document.getElementsByClassName("guesses")
 const gameText = document.getElementById("game-text")
+let guessWord, isValid, win
 let turns = 6
 let wordLength = 5
 let guessList = []
 let gameActive = true
+let guessNumber = 1 // I know this is a magic number - will fix
 document.onkeyup = checkKey
+
+
+
+function getInitialGameState() {
+    // if (turns < 6) {
+        fetch("/wordle/api/gamestate")
+            .then((response) => response.json())
+            .then((data) => {dataHandler(data)})
+        // }
+    }
+    
+function dataHandler(data) {
+    guessWord = data["user_guess"];
+    isValid = data["is_word"];
+    win = data["win"];
+    if (isValid === true) {
+        updateDOM(`You guessed ${guessWord.toUpperCase()}`);
+        guessNumber = guessNumber + 1
+        gameWinOrLose()
+    }
+    else {
+        updateDOM(`That's not even a valid word -_-`);
+    }
+}
 
 // This will take the guessList input joined as a string and send it to the server side to check against the valid words
 function fetchGuess(guess) {
@@ -18,7 +44,7 @@ function fetchGuess(guess) {
         body: JSON.stringify(guess.toLowerCase())
     })
     .then((response) => response.json())
-    .then((data) => console.log(data))
+    .then((data) => {dataHandler(data)})
 }
 
 function checkButton() {
@@ -31,7 +57,7 @@ function checkButton() {
         keyboardAction[x].addEventListener("click", e => {
             if (keyboardAction[x].id === "enter") {
                 if (guessList.length === wordLength) {
-                    fetch(guessList.join("").toUpperCase())
+                    fetchGuess(guessList.join("").toUpperCase())
                     guessList.length = 0
                 }
                 else if (guessList.length) {
@@ -47,7 +73,7 @@ function checkButton() {
                     updateDOM("Second guessing yourself now??")
                 }
                 if (guessList.length === 0) {
-                    guess1.innerText = `Guess 1`
+                    guesses[guessNumber].innerText = `Guess 1`
                 }
             }
         })
@@ -105,14 +131,30 @@ function validGuess(guess) {
 
 function gameWinOrLose() {
     if (turns === 0) {
-        gameActive = false
+        gameActive = false;
+        if (win === false) {
+            updateDOM("You Lost")
+        }
+    }
+    if (win === true) {
+        updateDOM("Yay you won!")
     }
 }
 
 function updateDOM(text) {
-    guess1 = document.getElementById("guess-1")
+    // this is where I need to figure out how to cycle through the guesses when I have a valid word
+    guess1 = document.getElementById(`guess-1`)
     guess1.innerText = `${guessList.join(" ").toUpperCase()}`
     gameText.innerText = `${text}`
 }
 
+// if (isValid === true) {
+//     updateDOM(`You guessed ${guessWord.toUpperCase()}`);
+//     gameWinOrLose()
+// }
+// else {
+//     updateDOM(`That's not even a valid word -_-`);
+// }
+
 checkButton()
+getInitialGameState()

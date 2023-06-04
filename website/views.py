@@ -64,6 +64,6 @@ def signup():
             password1 = sha256((password1).encode()).hexdigest()
             database.insert_data(created, username, email, password1)
             flash('User Created')
-            login_user(username, remember = True)
+            login_user(User.retrieve_id(username), remember = True)
         database.close_db()
     return render_template("signup.html")
