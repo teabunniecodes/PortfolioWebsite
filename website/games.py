@@ -189,17 +189,16 @@ def game_state_wordle():
     chosen_word = db.retrieve_word(user)
     guess_letters = list(user_guess)
     chosen_letters = list(chosen_word)
-    words = db.retrieve_guessed_words(user)
+    words = db.retrieve_guessed_words(user).split(', ')
     is_word = False
     is_win = False
-    print(user_guess)
     if user_guess in wordle_words or user_guess in dictionary:
         is_word = True
         if user_guess == chosen_word:
             is_win = True
     else:
         is_word = False
-    return jsonify(user_guess = user_guess, is_word = is_word, win = is_win)
+    return jsonify(user_guess = user_guess, is_word = is_word, win = is_win, words = words)
 
 
 @games.route('/madlibs')

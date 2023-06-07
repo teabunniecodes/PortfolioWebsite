@@ -2,14 +2,12 @@ const keyboardButton = document.getElementsByClassName("keyboard-button")
 const keyboardAction = document.getElementsByClassName("keyboard-action")
 const guesses = document.getElementsByClassName("guesses")
 const gameText = document.getElementById("game-text")
-let guessWord, isValid, win
+let guessWord, isValid, win, guessLine, guessNumber
 let turns = 6
 let wordLength = 5
 let guessList = []
 let gameActive = true
-let guessNumber = 1 // I know this is a magic number - will fix
 document.onkeyup = checkKey
-
 
 
 function getInitialGameState() {
@@ -24,9 +22,15 @@ function dataHandler(data) {
     guessWord = data["user_guess"];
     isValid = data["is_word"];
     win = data["win"];
+    words = data["words"]
+    for (let x = 0; x < words.length; x++) {
+        guesses[x].innerText = `${words[x].toUpperCase().split('').join(' ')}`
+        // TODO NO MAGIC NUMBERS >:O!!!!!!!!!!
+        guessLine = guesses[x+1]
+        guessNumber = (x+2)
+    }
     if (isValid === true) {
         updateDOM(`You guessed ${guessWord.toUpperCase()}`);
-        guessNumber = guessNumber + 1
         gameWinOrLose()
     }
     else {
@@ -70,10 +74,12 @@ function checkButton() {
             else if (keyboardAction[x].id === "delete") {
                 if (guessList.length) {
                     guessList.pop()
+                    updateGuess(guessLine)
                     updateDOM("Second guessing yourself now??")
                 }
                 if (guessList.length === 0) {
-                    guesses[guessNumber].innerText = `Guess 1`
+                    // console.log(guessLine)
+                    guessLine.innerText = `Guess ${guessNumber}`
                 }
             }
         })
@@ -106,10 +112,11 @@ function checkKey(e) {
     else if (e.key === "Backspace") {
         if (guessList.length) {
             guessList.pop();
+            updateGuess(guessLine)
             updateDOM("Second guessing yourself eh?")
         }
         if (guessList.length === 0) {
-            guess1.innerText = `Guess 1`
+            guessLine.innerText = `Guess ${guessNumber}`
         }
     }
 }
@@ -125,6 +132,7 @@ function alphabetEvent(value) {
 function validGuess(guess) {
     if (guessList.length < wordLength && gameActive) {
         guessList.push(guess)
+        updateGuess(guessLine)
         updateDOM(`You guessed ${guess.toUpperCase()}`)
     }
 }
@@ -141,10 +149,14 @@ function gameWinOrLose() {
     }
 }
 
+function updateGuess(lineNumber) {
+    console.log(lineNumber)
+    lineNumber.innerText = `${guessList.join(" ").toUpperCase()}`
+}
+
 function updateDOM(text) {
-    // this is where I need to figure out how to cycle through the guesses when I have a valid word
-    guess1 = document.getElementById(`guess-1`)
-    guess1.innerText = `${guessList.join(" ").toUpperCase()}`
+    // guess1 = document.getElementById(`guess-1`)
+    // guess1.innerText = `${guessList.join(" ").toUpperCase()}`
     gameText.innerText = `${text}`
 }
 
