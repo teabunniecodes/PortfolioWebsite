@@ -1,0 +1,7 @@
+TODO - Wordle
+needs to check the guess with dictionary and wordle list to see if valid guess - if not then game yells at you
+need to move onto the next guess line when pressing enter
+need to color the letters for the guess
+need to change the "yell message" so it doesnt show every letter as they are guessed (redundant)
+
+you may want to look into the fetch documentation, you might be hitting some race conditions

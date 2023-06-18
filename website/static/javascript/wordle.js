@@ -2,7 +2,7 @@ const keyboardButton = document.getElementsByClassName("keyboard-button")
 const keyboardAction = document.getElementsByClassName("keyboard-action")
 const guesses = document.getElementsByClassName("guesses")
 const gameText = document.getElementById("game-text")
-let guessWord, isValid, win, guessLine, guessNumber
+let guessWord, isValid, win, guessLine
 let turns = 6
 let wordLength = 5
 let guessList = []
@@ -23,11 +23,12 @@ function dataHandler(data) {
     isValid = data["is_word"];
     win = data["win"];
     words = data["words"]
+    if (words.length === 0) {
+        guessLine = guesses[words.length]
+    }
     for (let x = 0; x < words.length; x++) {
         guesses[x].innerText = `${words[x].toUpperCase().split('').join(' ')}`
-        // TODO NO MAGIC NUMBERS >:O!!!!!!!!!!
-        guessLine = guesses[x+1]
-        guessNumber = (x+2)
+        guessLine = guesses[words.length]
     }
     if (isValid === true) {
         updateDOM(`You guessed ${guessWord.toUpperCase()}`);
@@ -78,8 +79,7 @@ function checkButton() {
                     updateDOM("Second guessing yourself now??")
                 }
                 if (guessList.length === 0) {
-                    // console.log(guessLine)
-                    guessLine.innerText = `Guess ${guessNumber}`
+                    guessLine.innerText = `Guess`
                 }
             }
         })
@@ -116,7 +116,7 @@ function checkKey(e) {
             updateDOM("Second guessing yourself eh?")
         }
         if (guessList.length === 0) {
-            guessLine.innerText = `Guess ${guessNumber}`
+            guessLine.innerText = `Guess`
         }
     }
 }
@@ -150,7 +150,6 @@ function gameWinOrLose() {
 }
 
 function updateGuess(lineNumber) {
-    console.log(lineNumber)
     lineNumber.innerText = `${guessList.join(" ").toUpperCase()}`
 }
 

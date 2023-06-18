@@ -18,7 +18,7 @@ def hangman():
     if request.method == "GET":
         # checks if the user has a word tied to their account - if they do not, a new word is assigned
         if db.check_id(user):
-            with open("./text documents/hangman-wordlist.txt") as read:
+            with open("./text-documents/hangman-wordlist.txt") as read:
                 words = list(map(str, read))
                 chosen_word = random.choice(words).strip("\n")
                 chosen_word = chosen_word.upper()
@@ -107,7 +107,7 @@ def reset_game():
     db.connect_db()
     user = current_user.get_id()
     db.restart_user_game(user)
-    with open("./text documents/hangman-wordlist.txt") as read:
+    with open("./text-documents/hangman-wordlist.txt") as read:
         words = list(map(str, read))
         chosen_word = random.choice(words).strip("\n")
         chosen_word = chosen_word.upper()
@@ -129,15 +129,14 @@ def wordle():
     db.connect_db()
     db.create_table()
     user = current_user.get_id()
-    # db.clear_table()
-    with open("./text documents/wordle-words.txt") as wordle_words:
+    with open("./text-documents/wordle-words.txt") as wordle_words:
         wordle_words = wordle_words.read().strip("\n")
-    with open("./text documents/wordle-dictionary.txt") as dictionary:
+    with open("./text-documents/wordle-dictionary.txt") as dictionary:
         dictionary = dictionary.read().strip("\n")
 
     if request.method == "GET":
         if db.check_id(user):
-            with open("./text documents/wordle-words.txt") as read:
+            with open("./text-documents/wordle-words.txt") as read:
                 wordle_words = list(map(str, read))
             chosen_word = random.choice(wordle_words).strip("\n")
             db.insert_data(user, chosen_word)
@@ -174,6 +173,13 @@ def wordle():
         db.commit_db()
     return game_state_wordle()
 
+@games.route('/wordle/clear')
+@login_required
+def cleardatabase():
+    db = SQL_db.Wordle()
+    db.connect_db()
+    db.clear_table()
+
 @games.route('/wordle/api/gamestate')
 @login_required
 def game_state_wordle():
@@ -181,25 +187,24 @@ def game_state_wordle():
     db.connect_db()
     db.create_table()
     user = current_user.get_id()
-    with open("./text documents/wordle-words.txt") as wordle_words:
+    with open("./text-documents/wordle-words.txt") as wordle_words:
         wordle_words = wordle_words.read().strip("\n")
-    with open("./text documents/wordle-dictionary.txt") as dictionary:
+    with open("./text-documents/wordle-dictionary.txt") as dictionary:
         dictionary = dictionary.read().strip("\n")
     user_guess = request.get_data(as_text=Literal[True]).strip('"')
     chosen_word = db.retrieve_word(user)
     guess_letters = list(user_guess)
     chosen_letters = list(chosen_word)
     words = db.retrieve_guessed_words(user).split(', ')
+    if words[0] == "":
+        words = []
     is_word = False
     is_win = False
     if user_guess in wordle_words or user_guess in dictionary:
         is_word = True
         if user_guess == chosen_word:
             is_win = True
-    else:
-        is_word = False
     return jsonify(user_guess = user_guess, is_word = is_word, win = is_win, words = words)
-
 
 @games.route('/madlibs')
 def madlibs():
